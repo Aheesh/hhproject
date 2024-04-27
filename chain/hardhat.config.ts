@@ -39,6 +39,11 @@ const config: HardhatUserConfig = {
         enabled: process.env.MAINNET_FORKING_ENABLED === "true",
       },
     },
+    localhost: {
+      url: "http://localhost:8545",
+      accounts: [deployerPrivateKey],
+      gasPrice: 9000000000, // 9 gwei
+    },
     sepolia: {
       url: `https://eth-sepolia.g.alchemy.com/v2/${providerApiKey}`,
       accounts: [deployerPrivateKey],
