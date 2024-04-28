@@ -15,6 +15,8 @@
 pragma solidity >=0.7.0 <0.9.0;
 pragma experimental ABIEncoderV2;
 
+import "hardhat/console.sol";
+
 import "@balancer-labs/v2-interfaces/contracts/vault/IVault.sol";
 import "@balancer-labs/v2-interfaces/contracts/pool-utils/IManagedPool.sol";
 import "@balancer-labs/v2-interfaces/contracts/pool-utils/ILastCreatedPoolFactory.sol";
@@ -66,15 +68,34 @@ contract Controller {
         address[] memory tokens = new address[](tokenContracts.length);
         for (uint i = 0; i < tokenContracts.length; i++) {
             tokens[i] = address(tokenContracts[i]);
+            console.log("getPoolTokens: Tokens %s", tokens[i]);
         }
 
         return (tokens, balances, totalBalance);
     }
 
+    //function to get the pool specialization from the vault calling the IVault.getPoolSpecialization function
+    function getPoolSpecialization()
+        public
+        view
+        returns (address, IVault.PoolSpecialization)
+    {
+        address poolAddress;
+        IVault.PoolSpecialization poolSpecialization;
+        (poolAddress, poolSpecialization) = _vault.getPool(_poolId);
+        console.log("getPoolSpecialization: Pool Address", poolAddress);
+        return (poolAddress, poolSpecialization);
+    }
+
     //Function to allow EOA to join the pool calling the IVault.joinPool function
-    // function joinPool(uint256 amount, uint256[] calldata maxAmountsIn)
-    //     external
-    // {
-    //     _vault.joinPool(_poolId, msg.sender, msg.sender , maxAmountsIn);
-    // }
+
+    function joinPool(
+        bytes32 poolId,
+        address sender,
+        address recipient,
+        IVault.JoinPoolRequest memory request
+    ) external payable {
+        console.log("Controller - joinPool() requst");
+        _vault.joinPool(poolId, sender, recipient, request);
+    }
 }

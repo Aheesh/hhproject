@@ -1,7 +1,6 @@
 //script to connect to the pool and get pool tokens using the Controller contract getPoolTokens()
 
 import hre from "hardhat";
-import { ethers } from "ethers";
 
 const func = async () => {
   console.log("Starting");
@@ -13,8 +12,15 @@ const func = async () => {
     "Controller",
     deployment.address
   );
-  const poolTokens = await controller.getPoolTokens();
-  console.log("Pool Tokens: ", poolTokens);
+  const [addresses, balance, totalBalance] = await controller.getPoolTokens();
+  console.log("Pool Tokens Addresses: ", addresses);
+  console.log("Pool Tokens Amounts: ", balance);
+  console.log("Total Pool Tokens Amount: ", totalBalance);
+
+  const [poolAddress, poolSpecialization] =
+    await controller.getPoolSpecialization();
+  console.log("Pool Address and Specialization", poolAddress);
+  console.log("Pool Specialization", poolSpecialization);
 };
 try {
   console.log("Calling function");
