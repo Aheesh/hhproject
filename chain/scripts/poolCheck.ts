@@ -21,7 +21,17 @@ const func = async () => {
     await controller.getPoolSpecialization();
   console.log("Pool Address and Specialization", poolAddress);
   console.log("Pool Specialization", poolSpecialization);
+
+  const poolJoinExitEnabled = await controller.getJoinExitEnabled();
+  console.log("Managed Pool Join Exit Enabled status", poolJoinExitEnabled);
+
+  const poolJoinExitDisable = await controller.set;
+  console.log("Join Disbaled", poolJoinExitDisable);
+
+  const poolSwapEnabled = await controller.getSwapEnabled();
+  console.log("Swap Enabled status", poolSwapEnabled);
 };
+
 try {
   console.log("Calling function");
   func();

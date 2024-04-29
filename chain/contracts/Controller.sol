@@ -90,12 +90,33 @@ contract Controller {
     //Function to allow EOA to join the pool calling the IVault.joinPool function
 
     function joinPool(
-        bytes32 poolId,
         address sender,
         address recipient,
         IVault.JoinPoolRequest memory request
     ) external payable {
         console.log("Controller - joinPool() requst");
-        _vault.joinPool(poolId, sender, recipient, request);
+        _vault.joinPool(_poolId, sender, recipient, request);
+    }
+
+    //function to check if joining and exiting pool is enabled
+    function getJoinExitEnabled() external view returns (bool) {
+        console.log(
+            "get Managed pool Join / Exit status - getJoinExitEnabled "
+        );
+        (address poolAddress, ) = _vault.getPool(_poolId);
+        return IManagedPool(poolAddress).getJoinExitEnabled();
+    }
+
+    //Function to set Managed Pool Join / Exit flag
+    function setJoinExitEnabled(bool joinExitEnabled) private {
+        (address poolAddress, ) = _vault.getPool(_poolId);
+        return IManagedPool(poolAddress).setJoinExitEnabled(joinExitEnabled);
+    }
+
+    //function to check status of the pool
+    function getSwapEnabled() external view returns (bool) {
+        console.log("Managed Pool getSwapEnabled");
+        (address poolAddress, ) = _vault.getPool(_poolId);
+        return IManagedPool(poolAddress).getSwapEnabled();
     }
 }

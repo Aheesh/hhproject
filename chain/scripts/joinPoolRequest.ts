@@ -23,8 +23,8 @@ async function joinLiquidityPool() {
   const tokenB = "0x8cea85ec7f3d314c4d144e34f2206c8ac0bbada1";
 
   const tokenArray: (AddressLike | BytesLike)[] = [
-    ethers.getAddress(tokenA),
     ethers.getAddress(tokenB),
+    ethers.getAddress(tokenA),
   ];
 
   const amountIn: bigint[] = [1000000000000000000n, 1000000000000000000n];
@@ -34,9 +34,9 @@ async function joinLiquidityPool() {
 
   let internalBalance = false;
 
-  const poolId =
-    "0xe5957ff84ebd6f66dd782811a7968d7e08cd013f00010000000000000000068f"; // Your pool ID goes here
-  console.log("Pool Id", poolId);
+  //   const poolId =
+  //     "0x58db658d48573ddd126888d7456b9c15995d173d00010000000000000000068b"; // Your pool ID goes here
+  //   console.log("Pool Id", poolId);
 
   const data = Buffer.alloc(1);
   data[0] = 0;
@@ -50,9 +50,8 @@ async function joinLiquidityPool() {
 
   try {
     const tx = await controller.joinPool(
-      poolId as BytesLike,
-      sender.deployer as AddressLike,
-      sender.deployer as AddressLike,
+      sender.deployer,
+      sender.deployer,
       joinPoolRequest
     );
     console.log("Transaction sent:", tx);
