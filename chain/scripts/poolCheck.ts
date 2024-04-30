@@ -12,6 +12,9 @@ const func = async () => {
     "Controller",
     deployment.address
   );
+  const controllerAddress = await controller.getAddress();
+  console.log("Controller Address", controllerAddress);
+
   const [addresses, balance, totalBalance] = await controller.getPoolTokens();
   console.log("Pool Tokens Addresses: ", addresses);
   console.log("Pool Tokens Amounts: ", balance);
@@ -21,7 +24,23 @@ const func = async () => {
     await controller.getPoolSpecialization();
   console.log("Pool Address and Specialization", poolAddress);
   console.log("Pool Specialization", poolSpecialization);
+
+  const poolAuthorizer = await controller.getAuthorizer();
+  console.log("poolAuthorizer", poolAuthorizer);
+
+  const poolJoinExitEnabled = await controller.getJoinExitEnabled();
+  console.log("Managed Pool Join Exit Enabled status", poolJoinExitEnabled);
+
+  const poolJoinExitDisable = await controller.setJoinExitEnabled(true);
+  console.log("Join Disbaled", poolJoinExitDisable);
+
+  const poolJoinExitEnabled2 = await controller.getJoinExitEnabled();
+  console.log("Managed Pool Join Exit Enabled status", poolJoinExitEnabled2);
+
+  const poolSwapEnabled = await controller.getSwapEnabled();
+  console.log("Swap Enabled status", poolSwapEnabled);
 };
+
 try {
   console.log("Calling function");
   func();
