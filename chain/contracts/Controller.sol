@@ -107,16 +107,22 @@ contract Controller {
         return IManagedPool(poolAddress).getJoinExitEnabled();
     }
 
-    //Function to set Managed Pool Join / Exit flag
-    function setJoinExitEnabled(bool joinExitEnabled) private {
-        (address poolAddress, ) = _vault.getPool(_poolId);
-        return IManagedPool(poolAddress).setJoinExitEnabled(joinExitEnabled);
-    }
-
     //function to check status of the pool
     function getSwapEnabled() external view returns (bool) {
         console.log("Managed Pool getSwapEnabled");
         (address poolAddress, ) = _vault.getPool(_poolId);
         return IManagedPool(poolAddress).getSwapEnabled();
+    }
+
+    //Function to set Managed Pool Join / Exit flag
+    function setJoinExitEnabled(bool joinExitEnabled) public {
+        (address poolAddress, ) = _vault.getPool(_poolId);
+        console.log("Managed Pool setJoinExitEnabled");
+        return IManagedPool(poolAddress).setJoinExitEnabled(joinExitEnabled);
+    }
+
+    //function to get Authorizer
+    function getAuthorizer() public view returns (IAuthorizer) {
+        return _vault.getAuthorizer();
     }
 }
