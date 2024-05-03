@@ -89,14 +89,14 @@ contract Controller {
 
     //Function to allow EOA to join the pool calling the IVault.joinPool function
 
-    function joinPool(
-        address sender,
-        address recipient,
-        IVault.JoinPoolRequest memory request
-    ) external payable {
-        console.log("Controller - joinPool() requst");
-        _vault.joinPool(_poolId, sender, recipient, request);
-    }
+    // function joinPool(
+    //     address sender,
+    //     address recipient,
+    //     IVault.JoinPoolRequest memory request
+    // ) external payable {
+    //     console.log("Controller - joinPool() requst");
+    //     _vault.joinPool(_poolId, sender, recipient, request);
+    // }
 
     //function to check if joining and exiting pool is enabled
     function getJoinExitEnabled() external view returns (bool) {
@@ -121,8 +121,8 @@ contract Controller {
         return IManagedPool(poolAddress).setJoinExitEnabled(joinExitEnabled);
     }
 
-    //function to get Authorizer
-    function getAuthorizer() public view returns (IAuthorizer) {
-        return _vault.getAuthorizer();
-    }
+    // //function to get Authorizer
+    // function getAuthorizer() public view returns (IAuthorizer) {
+    //     return _vault.getAuthorizer();
+    // }
 }

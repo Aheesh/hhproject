@@ -3,17 +3,17 @@
 import hre from "hardhat";
 import { ethers } from "hardhat";
 import controller from "../artifacts/contracts/Controller.sol/Controller.json";
-import { ContractRunner } from "ethers";
 
 const func = async () => {
-  const deployedAddress = "0x542cf32b7fd8567aa2f94fe366c406c7f80d233f";
+  const deployedAddress = "0x5981c3d9e09fac286beaff7d29f6547b7e4b512e";
+  //const deployedAddress = "0x9CBd52f4186024f92D2c3Fc59E133090F40758f6"; //
 
   const sender = await hre.getNamedAccounts();
-  //console.log("sender ===> ", sender);
+  console.log("sender ===> ", sender);
   const signer = await ethers.getSigner(sender.deployer);
-  //console.log("Signer ===> ", signer);
+  console.log("Signer ===> ", signer);
 
-  //console.log("Deployed Controller ABI ", controller.abi);
+  console.log("Deployed Controller ABI ", controller.abi);
 
   const deployedController = new ethers.Contract(
     deployedAddress,
@@ -32,6 +32,9 @@ const func = async () => {
 
   poolStatus = await deployedController.getJoinExitEnabled();
   console.log("Pool Status", poolStatus);
+
+  const poolAuthorizer = await deployedController.getAuthorizer();
+  console.log("Pool Authorizer", poolAuthorizer);
 };
 
 try {

@@ -45,7 +45,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const minimalParams: ControllerFactory.MinimalPoolParamsStruct = {
     name: "GameToken",
     symbol: "GT",
-    tokens: [deploymentB.address, deploymentA.address],
+    tokens: [deploymentA.address, deploymentB.address],
     normalizedWeights: ["500000000000000000", "500000000000000000"],
     swapFeePercentage: "10000000000000000",
     swapEnabledOnStart: true,
