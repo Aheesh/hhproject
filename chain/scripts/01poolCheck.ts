@@ -31,8 +31,8 @@ const func = async () => {
   const poolJoinExitEnabled = await controller.getJoinExitEnabled();
   console.log("Managed Pool Join Exit Enabled status", poolJoinExitEnabled);
 
-  const poolJoinExitDisable = await controller.setJoinExitEnabled(true);
-  console.log("Join Disbaled", poolJoinExitDisable);
+  // const poolJoinExitDisable = await controller.setJoinExitEnabled(true);
+  // console.log("Join Disbaled", poolJoinExitDisable);
 
   const poolJoinExitEnabled2 = await controller.getJoinExitEnabled();
   console.log("Managed Pool Join Exit Enabled status", poolJoinExitEnabled2);
