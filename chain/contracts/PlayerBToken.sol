@@ -31,6 +31,7 @@ contract PlayerBToken is ERC20 {
         uint256 amount
     ) public override returns (bool) {
         emit PlayerBTokenApproved(msg.sender, spender, amount);
+        console.log("Player B token Approval", msg.sender, spender, amount);
         return super.approve(spender, amount);
     }
 

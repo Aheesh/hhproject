@@ -125,4 +125,93 @@ contract Controller {
     function getAuthorizer() public view returns (IAuthorizer) {
         return _vault.getAuthorizer();
     }
+
+    // Approve the Vault contract to spend tokens
+    function approveVault(address token, uint256 amount) public {
+        console.log(
+            "Controller - approveToken() request",
+            msg.sender,
+            address(this),
+            amount
+        );
+        IERC20(token).approve(address(_vault), amount);
+        console.log(
+            "Controller Allowance of token",
+            token,
+            IERC20(token).allowance(address(this), address(_vault))
+        );
+    }
+
+    //function to transfer token to controller contract
+    function transferToken(address token, uint256 amount) public {
+        console.log(
+            "Controller - transferToken function call - start ",
+            amount
+        );
+        console.log(
+            "Controller - transferToken function call - start -->Current Allowance ",
+            IERC20(token).allowance(msg.sender, address(this))
+        );
+        if (IERC20(token).allowance(msg.sender, address(this)) >= amount) {
+            IERC20(token).transferFrom(msg.sender, address(this), amount);
+            console.log(
+                "Controller - transferToken function call - end",
+                IERC20(token).balanceOf(address(this))
+            );
+        } else {
+            console.log("Get additiona allowance");
+        }
+    }
+
+    //function to init the managed pool
+    function initPool(
+        address[] memory PoolTokens,
+        uint256[] memory amountsIn
+    ) external payable {
+        IAsset[] memory assets = new IAsset[](PoolTokens.length);
+        for (uint i = 0; i < PoolTokens.length; i++) {
+            assets[i] = IAsset(address(PoolTokens[i]));
+        }
+        // Create a new array with the size of amountsIn plus one (for the initial value)
+        uint256[] memory weiAmountPerToken = new uint256[](
+            1 + amountsIn.length
+        );
+
+        // Assign the initial value
+        weiAmountPerToken[0] = 5192296858534827628530496329000000;
+
+        // Copy the values from amountsIn
+        for (uint i = 0; i < amountsIn.length; i++) {
+            weiAmountPerToken[i + 1] = amountsIn[i];
+        }
+
+        uint256 JOIN_KIND_INIT = 0;
+        bytes memory initUserData = abi.encode(JOIN_KIND_INIT, amountsIn);
+        console.log(
+            "Controller - initPool() initUserData ===? check next line"
+        );
+        console.logBytes(initUserData);
+
+        IVault.JoinPoolRequest memory initJoinPoolRequest = IVault
+            .JoinPoolRequest({
+                assets: assets,
+                maxAmountsIn: weiAmountPerToken,
+                userData: initUserData,
+                fromInternalBalance: false
+            });
+        console.log(
+            "Controller - initPool() request msg.sender is ",
+            msg.sender
+        );
+        _vault.joinPool(
+            _poolId,
+            address(this),
+            address(this),
+            initJoinPoolRequest
+        );
+        console.log(
+            "Controller - initPool() request done for controller ",
+            address(this)
+        );
+    }
 }

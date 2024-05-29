@@ -4,7 +4,7 @@ import { ContractTransactionReceipt, EventLog } from "ethers";
 import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { ControllerFactory } from "../typechain-types/contracts/ControllerFactory";
-import controllerABI from "../artifacts/contracts/ControllerFactory.sol/ControllerFactory.json";
+import controllerFactoryABI from "../artifacts/contracts/ControllerFactory.sol/ControllerFactory.json";
 import { ethers } from "hardhat";
 
 const vaultAddress = "0xBA12222222228d8Ba445958a75a0704d566BF2C8";
@@ -45,7 +45,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const minimalParams: ControllerFactory.MinimalPoolParamsStruct = {
     name: "GameToken",
     symbol: "GT",
-    tokens: [deploymentB.address, deploymentA.address],
+    tokens: [deploymentA.address, deploymentB.address],
     normalizedWeights: ["500000000000000000", "500000000000000000"],
     swapFeePercentage: "10000000000000000",
     swapEnabledOnStart: true,
@@ -76,7 +76,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     "🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 START - parsing logs 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 "
   );
 
-  const iface = new ethers.Interface(controllerABI.abi);
+  const iface = new ethers.Interface(controllerFactoryABI.abi);
   // Parse the logs for ControllerCreated event
   const events = receipt.logs.map((log) => {
     const parsedLog = iface.parseLog(log);
