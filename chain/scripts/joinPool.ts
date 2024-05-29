@@ -1,12 +1,6 @@
 //Script to LP EOA using joinPool
 
-import {
-  formatBytes32String,
-  parseBytes32String,
-} from "@ethersproject/strings";
-import { AddressLike, BytesLike } from "ethers";
 import hre, { ethers } from "hardhat";
-import { Address } from "hardhat-deploy/types";
 
 const func = async () => {
   //Get access to deployed Controlle contract
@@ -16,44 +10,32 @@ const func = async () => {
   console.log("Controller Address : ", deployment.address);
   const controller = await hre.ethers.getContractAt(
     "Controller",
-    deployment.address
+    "0x968804665f2fd018c0bd04355a6f9c814708237a"
   );
 
   const tokenB = ethers.getAddress(
-    "0x8cea85ec7f3d314c4d144e34f2206c8ac0bbada1"
+    "0x273c507D8E21cDE039491B14647Fe9278D88e91D"
   );
   const tokenA = ethers.getAddress(
-    "0xf93b0549cd50c849d792f0eae94a598fa77c7718"
+    "0x04F75a27cE2FDC591C71a88f1EcaC7e5Ce44f5Fc"
   );
 
   //construct an adddress array with tokenA and tokenB
-  const tokenArray = [tokenA, tokenB];
+  const tokenArray = [tokenB, tokenA];
   //create an array with amount of tokens to be deposited
   const amountIn = [1000000000000000000n, 1000000000000000000n];
-  const { sender } = await hre.getNamedAccounts();
-  console.log("sender address", sender);
+  const { deployer } = await hre.getNamedAccounts();
+  console.log("sender address", deployer);
   //const recipientAddress = sender[await hre.getNamedAccounts()] as AddressLike; //Same as sender
   //User data placeholder
-  const data = Buffer.alloc(1);
-  data[0] = 0;
-  //InternalBalance
-  let internalBalance = false;
 
-  const poolId =
-    "0xa178699567e122c4a75ac27cbaa4d84fa7c728e800010000000000000000068e";
-  const poolID = formatBytes32String(poolId);
-
-  const JoinPoolRequest = {
-    assets: tokenArray,
-    maxAmountIn: amountIn,
-    userData: data,
-    fromInternalBalance: internalBalance,
-  };
-
-  const tx = await controller.joinPool(
-    poolId as BytesLike,
-    sender as AddressLike,
-    sender as AddressLike,
-    JoinPoolRequest
-  );
+  const pooltx = await controller.initPool(tokenArray, amountIn);
+  console.log("Pool TX", pooltx);
 };
+
+try {
+  console.log("Starting joinPool");
+  func();
+} catch (error) {
+  console.error(error);
+}

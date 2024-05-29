@@ -1,6 +1,9 @@
 //script to connect to the pool and get pool tokens using the Controller contract getPoolTokens()
 
 import hre from "hardhat";
+//import IManagedPool from "../artifacts/@balancer-labs/v2-interfaces/contracts/pool-utils/IManagedPool.sol/IManagedPool.json";
+import Contoller from "../artifacts/contracts/Controller.sol/Controller.json";
+import { ethers } from "hardhat";
 
 const func = async () => {
   console.log("Starting");
@@ -31,8 +34,30 @@ const func = async () => {
   const poolJoinExitEnabled = await controller.getJoinExitEnabled();
   console.log("Managed Pool Join Exit Enabled status", poolJoinExitEnabled);
 
-  // const poolJoinExitDisable = await controller.setJoinExitEnabled(true);
-  // console.log("Join Disbaled", poolJoinExitDisable);
+  const managedPoolControllerAddress =
+    // "0x09212359a9fee1c8e2778965d9e29a91e947e060";
+    "0x2bd93245592f7676660402912b74032851e168e0";
+  console.log("Managed Pool Controller Address", managedPoolControllerAddress);
+  const provider = hre.ethers.provider;
+  const managedPoolContract = new ethers.Contract(
+    managedPoolControllerAddress,
+    Contoller.abi,
+    provider
+  );
+  const managedPoolId = await managedPoolContract.getPoolId();
+  console.log("Managed Pool Id", managedPoolId);
+
+  const sender = await hre.getNamedAccounts();
+  const signer = await ethers.getSigner(sender.deployer);
+  console.log("Signer ===> ", sender.deployer);
+  const managedPoolContractSigner = new ethers.Contract(
+    managedPoolControllerAddress,
+    Contoller.abi,
+    signer
+  );
+  const poolJoinExitDisable =
+    await managedPoolContractSigner.setJoinExitEnabled(true);
+  console.log("Join Disbaled", poolJoinExitDisable);
 
   const poolJoinExitEnabled2 = await controller.getJoinExitEnabled();
   console.log("Managed Pool Join Exit Enabled status", poolJoinExitEnabled2);

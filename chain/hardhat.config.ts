@@ -11,6 +11,9 @@ const providerInfuraKey = process.env.INFURA_API_KEY;
 const deployerPrivateKey =
   process.env.DEPLOYER_PRIVATE_KEY ??
   "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
+const user1PrivateKey =
+  process.env.USER1_PRIVATE_KEY ??
+  "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d";
 const etherscanApiKey = process.env.ETHERSCAN_API_KEY;
 
 const config: HardhatUserConfig = {
@@ -24,6 +27,9 @@ const config: HardhatUserConfig = {
   namedAccounts: {
     deployer: {
       default: 0,
+    },
+    user1: {
+      default: 1,
     },
   },
   networks: {
@@ -40,8 +46,8 @@ const config: HardhatUserConfig = {
       },
     },
     localhost: {
-      url: "http://localhost:8545",
-      accounts: [deployerPrivateKey],
+      url: "http://127.0.0.1:8545/",
+      accounts: [deployerPrivateKey, user1PrivateKey],
       gasPrice: 9000000000, // 9 gwei
     },
     sepolia: {
