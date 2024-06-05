@@ -3,7 +3,6 @@
 import hre from "hardhat";
 import { ethers } from "hardhat";
 import controller from "../artifacts/contracts/Controller.sol/Controller.json";
-import { ContractRunner } from "ethers";
 
 const func = async () => {
   const deployedAddress = "0x542cf32b7fd8567aa2f94fe366c406c7f80d233f";
