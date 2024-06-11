@@ -114,6 +114,13 @@ contract Controller {
         return IManagedPool(poolAddress).getSwapEnabled();
     }
 
+    //function to set swap enabled flag
+    function setSwapEnabled(bool swapEnabled) public {
+        (address poolAddress, ) = _vault.getPool(_poolId);
+        console.log("Managed Pool setSwapEnabled = ", swapEnabled);
+        return IManagedPool(poolAddress).setSwapEnabled(swapEnabled);
+    }
+
     //Function to set Managed Pool Join / Exit flag
     function setJoinExitEnabled(bool joinExitEnabled) public {
         (address poolAddress, ) = _vault.getPool(_poolId);

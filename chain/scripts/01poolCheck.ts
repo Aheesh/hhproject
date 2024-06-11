@@ -1,7 +1,6 @@
 //script to connect to the pool and get pool tokens using the Controller contract getPoolTokens()
 
 import hre from "hardhat";
-//import IManagedPool from "../artifacts/@balancer-labs/v2-interfaces/contracts/pool-utils/IManagedPool.sol/IManagedPool.json";
 import Contoller from "../artifacts/contracts/Controller.sol/Controller.json";
 import { ethers } from "hardhat";
 
@@ -15,8 +14,8 @@ const func = async () => {
     "Controller",
     deployment.address
   );
-  const controllerAddress = await controller.getAddress();
-  console.log("Controller Address", controllerAddress);
+  // const controllerAddress = await controller.getAddress();
+  // console.log("Controller Address", controllerAddress);
 
   const [addresses, balance, totalBalance] = await controller.getPoolTokens();
   console.log("Pool Tokens Addresses: ", addresses);
@@ -25,8 +24,8 @@ const func = async () => {
 
   const [poolAddress, poolSpecialization] =
     await controller.getPoolSpecialization();
-  console.log("Pool Address and Specialization", poolAddress);
-  console.log("Pool Specialization", poolSpecialization);
+  console.log("Pool Address : ", poolAddress);
+  console.log("Pool Specialization : ", poolSpecialization);
 
   const poolAuthorizer = await controller.getAuthorizer();
   console.log("poolAuthorizer", poolAuthorizer);
@@ -35,7 +34,7 @@ const func = async () => {
   console.log("Managed Pool Join Exit Enabled status", poolJoinExitEnabled);
 
   const managedPoolControllerAddress =
-    "0x86393d64dff5cb19455a6e8a7ce51cd6f92bc00c";
+    "0xf67288fb2963c9310db1b80e7678a5c38a0f2bee";
   console.log("Managed Pool Controller Address", managedPoolControllerAddress);
   const provider = hre.ethers.provider;
   const managedPoolContract = new ethers.Contract(
@@ -56,13 +55,19 @@ const func = async () => {
   );
   const poolJoinExitDisable =
     await managedPoolContractSigner.setJoinExitEnabled(true);
-  console.log("Join Disbaled", poolJoinExitDisable);
+  // console.log("Join Disbaled", poolJoinExitDisable);
 
   const poolJoinExitEnabled2 = await controller.getJoinExitEnabled();
   console.log("Managed Pool Join Exit Enabled status", poolJoinExitEnabled2);
 
-  const poolSwapEnabled = await controller.getSwapEnabled();
-  console.log("Swap Enabled status", poolSwapEnabled);
+  let poolSwapStatus = await controller.getSwapEnabled();
+  console.log("Swap Enabled status", poolSwapStatus);
+
+  const poolSwapEnabled = await managedPoolContractSigner.setSwapEnabled(true);
+  // console.log("Swap Enabled status", poolSwapEnabled);
+
+  poolSwapStatus = await controller.getSwapEnabled();
+  console.log("Swap Enabled status", poolSwapStatus);
 };
 
 try {
