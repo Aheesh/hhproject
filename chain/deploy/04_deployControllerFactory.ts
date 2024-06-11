@@ -33,6 +33,12 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     deploymentB.address
   );
 
+  const deploymentDrawToken = await hre.deployments.get("DrawToken");
+  console.log(
+    "deployed contract address DrawToken ✍️ ✍️ ✍️ === ✍️ ✍️ ✍️",
+    deploymentDrawToken.address
+  );
+
   const deployment = await hre.deployments.get("ControllerFactory");
   console.log(
     "deployed contract address 🏭 Controller Factory 🏭 === 🏭",
@@ -45,8 +51,16 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const minimalParams: ControllerFactory.MinimalPoolParamsStruct = {
     name: "GameToken",
     symbol: "GT",
-    tokens: [deploymentB.address, deploymentA.address],
-    normalizedWeights: ["500000000000000000", "500000000000000000"],
+    tokens: [
+      deploymentB.address, //TODO - function to sort the token addresses numerically
+      deploymentDrawToken.address,
+      deploymentA.address,
+    ], //Odds at A:B:D 0.6:0.3:0.1
+    normalizedWeights: [
+      "300000000000000000",
+      "100000000000000000",
+      "600000000000000000",
+    ],
     swapFeePercentage: "10000000000000000",
     swapEnabledOnStart: true,
     managementAumFeePercentage: "10000000000000000",
@@ -60,7 +74,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     deployment.address
   );
   console.log(
-    "03 deploy script *******ControllerFactory *******",
+    "04 deploy script *******ControllerFactory *******",
     await ContollerFactoryContract.isDisabled()
   );
 
@@ -68,7 +82,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     await ContollerFactoryContract.create(minimalParams)
   ).wait()) as unknown as ContractTransactionReceipt;
 
-  console.log("03 deploy script -- receipt tx hash", receipt.hash);
+  console.log("04 deploy script -- receipt tx hash", receipt.hash);
   ////////////////////////////////////////////////////////////////////////////
 
   //fetch poolId
