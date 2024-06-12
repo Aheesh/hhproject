@@ -39,6 +39,12 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     deploymentDrawToken.address
   );
 
+  const deploymentStableToken = await hre.deployments.get("StableToken");
+  console.log(
+    "deployed contract address StableToken 🐎 ⚖️ 🐎 === 🐎 ⚖️ 🐎",
+    deploymentStableToken.address
+  );
+
   const deployment = await hre.deployments.get("ControllerFactory");
   console.log(
     "deployed contract address 🏭 Controller Factory 🏭 === 🏭",
@@ -52,14 +58,16 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     name: "GameToken",
     symbol: "GT",
     tokens: [
+      deploymentStableToken.address,
       deploymentB.address, //TODO - function to sort the token addresses numerically
       deploymentDrawToken.address,
       deploymentA.address,
-    ], //Odds at A:B:D 0.6:0.3:0.1
+    ], //Odds at S:A:B:D 0.5:0.3:0.15:0.05
     normalizedWeights: [
+      "500000000000000000",
+      "150000000000000000",
+      "50000000000000000",
       "300000000000000000",
-      "100000000000000000",
-      "600000000000000000",
     ],
     swapFeePercentage: "10000000000000000",
     swapEnabledOnStart: true,
@@ -82,7 +90,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     await ContollerFactoryContract.create(minimalParams)
   ).wait()) as unknown as ContractTransactionReceipt;
 
-  console.log("04 deploy script -- receipt tx hash", receipt.hash);
+  console.log("05 deploy script -- receipt tx hash", receipt.hash);
   ////////////////////////////////////////////////////////////////////////////
 
   //fetch poolId
