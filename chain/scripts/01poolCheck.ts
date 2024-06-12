@@ -34,7 +34,7 @@ const func = async () => {
   console.log("Managed Pool Join Exit Enabled status", poolJoinExitEnabled);
 
   const managedPoolControllerAddress =
-    "0xf67288fb2963c9310db1b80e7678a5c38a0f2bee";
+    "0xd1c6df03c4c0a2260721d08db4c26a009dc68149";
   console.log("Managed Pool Controller Address", managedPoolControllerAddress);
   const provider = hre.ethers.provider;
   const managedPoolContract = new ethers.Contract(
