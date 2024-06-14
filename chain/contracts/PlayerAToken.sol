@@ -35,7 +35,7 @@ contract PlayerAToken is ERC20 {
         return super.approve(spender, amount);
     }
 
-    function checkBalance(address account) public view returns (uint256) {
-        return balanceOf(account);
-    }
+    // function checkBalance(address account) public view returns (uint256) {
+    //     return balanceOf(account);
+    // }
 }
