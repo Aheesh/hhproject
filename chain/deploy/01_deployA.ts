@@ -2,7 +2,6 @@
 
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
-//import { PlayerAToken } from "../typechain-types/contracts/PlayerAToken";
 
 const deployYourContractA: DeployFunction = async function (
   hre: HardhatRuntimeEnvironment
@@ -15,7 +14,7 @@ const deployYourContractA: DeployFunction = async function (
   // Deploy Player A Token
   await deploy("PlayerAToken", {
     from: deployer,
-    args: [6000],
+    args: [600],
     log: true,
     autoMine: true,
   });
