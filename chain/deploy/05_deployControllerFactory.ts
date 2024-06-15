@@ -6,6 +6,7 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { ControllerFactory } from "../typechain-types/contracts/ControllerFactory";
 import controllerFactoryABI from "../artifacts/contracts/ControllerFactory.sol/ControllerFactory.json";
 import { ethers } from "hardhat";
+import tokenDrawABI from "../artifacts/contracts/DrawToken.sol/DrawToken.json";
 
 const vaultAddress = "0xBA12222222228d8Ba445958a75a0704d566BF2C8";
 const managedPoolAddressMainnet = "0xBF904F9F340745B4f0c4702c7B6Ab1e808eA6b93";
@@ -58,16 +59,17 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     name: "GameToken",
     symbol: "GT",
     tokens: [
+      //TODO - function to sort the token addresses numerically
       deploymentStableToken.address,
-      deploymentB.address, //TODO - function to sort the token addresses numerically
-      deploymentDrawToken.address,
+      deploymentB.address,
       deploymentA.address,
+      deploymentDrawToken.address,
     ], //Odds at S:A:B:D 0.5:0.3:0.15:0.05
     normalizedWeights: [
       "500000000000000000",
       "150000000000000000",
-      "50000000000000000",
       "300000000000000000",
+      "50000000000000000",
     ],
     swapFeePercentage: "10000000000000000",
     swapEnabledOnStart: true,
@@ -107,7 +109,14 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const poolId = events.find((event) => event?.name === "ControllerCreated")
     ?.args.poolId;
 
+  const controllerAddress = events.find(
+    (event) => event?.name === "ControllerCreated"
+  )?.args.controller;
   console.log("PoolId 🏊 🏊 🏊 ===>>>>> 🏊 🏊 🏊", poolId);
+  console.log(
+    "Managed pool 🕹️ 🕹️ 🕹️ Controller Address 🕹️ 🕹️ 🕹️ ",
+    controllerAddress
+  );
 
   console.log(
     "🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 END of parsing logs 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 "
@@ -125,6 +134,16 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     "deployed contract address 🏭 Controller 🏭 === 🏭",
     deploymentController.address
   );
+
+  //Set the controller address for Draw Token
+  const drawTokenContract = await ethers.getContractAt(
+    "DrawToken",
+    deploymentDrawToken.address
+  );
+
+  const controllerTx = await drawTokenContract.setController(controllerAddress);
+  controllerTx.wait();
+  console.log("Controller value set", controllerTx);
 };
 
 export default func;
