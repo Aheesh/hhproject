@@ -74,6 +74,23 @@ contract Controller {
         return (tokens, balances, totalBalance);
     }
 
+    //function to get the pool tokens info on cash , managed balance and assetManager calling the IVault.getPoolTokensInfo function
+    function getPoolTokenInfo(
+        IERC20 token
+    ) public view returns (uint256, uint256, uint256, address) {
+        (
+            uint256 cashBalance,
+            uint256 managedBalance,
+            uint256 lastChangeBlock,
+            address assetManager
+        ) = _vault.getPoolTokenInfo(_poolId, token);
+        console.log("getPoolTokensInfo: Cash Balance %s", cashBalance);
+        console.log("getPoolTokensInfo: Managed Balance %s", managedBalance);
+        console.log("getPoolTokensInfo: Last Change Block %s", lastChangeBlock);
+        console.log("getPoolTokensInfo: Asset Manager %s", assetManager);
+        return (cashBalance, managedBalance, lastChangeBlock, assetManager);
+    }
+
     //function to get the pool specialization from the vault calling the IVault.getPoolSpecialization function
     function getPoolSpecialization()
         public
@@ -221,4 +238,6 @@ contract Controller {
             address(this)
         );
     }
+
+    //function to remove token from the pool
 }

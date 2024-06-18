@@ -22,6 +22,13 @@ const func = async () => {
   console.log("Pool Tokens Amounts: ", balance);
   console.log("Total Pool Tokens Amount: ", totalBalance);
 
+  const [cash, managed, lastChangeBlock, assetManager] =
+    await controller.getPoolTokenInfo(addresses[4]);
+  console.log("Cash Token Address: ", cash);
+  console.log("Managed Token Address: ", managed);
+  console.log("Last Change Block: ", lastChangeBlock);
+  console.log("Asset Manager: ", assetManager);
+
   const [poolAddress, poolSpecialization] =
     await controller.getPoolSpecialization();
   console.log("Pool Address : ", poolAddress);
@@ -34,7 +41,7 @@ const func = async () => {
   console.log("Managed Pool Join Exit Enabled status", poolJoinExitEnabled);
 
   const managedPoolControllerAddress =
-    "0x23f7184A0303C679487AD8e3dd1011A77dFFF648";
+    "0xa0809d0fe7CCCf80A0dAC70DA74B2088b3Aa8fD9";
   console.log("Managed Pool Controller Address", managedPoolControllerAddress);
   const provider = hre.ethers.provider;
   const managedPoolContract = new ethers.Contract(
