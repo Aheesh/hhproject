@@ -239,5 +239,22 @@ contract Controller {
         );
     }
 
-    //function to remove token from the pool
+    //function to withdraw token cash balance from the pool
+    function withdrawFromPool(IERC20 token, uint256 amount) public {
+        IVault.PoolBalanceOp[] memory ops = new IVault.PoolBalanceOp[](2);
+
+        //Withdraw token, creating a non-zero 'managed' balance in the Pool.
+        ops[0].kind = IVault.PoolBalanceOpKind.WITHDRAW;
+        ops[0].poolId = _poolId;
+        ops[0].amount = amount;
+        ops[0].token = token;
+
+        //Clear the 'managed' balance in the Pool.
+        ops[1].kind = IVault.PoolBalanceOpKind.UPDATE;
+        ops[1].poolId = _poolId;
+        ops[1].amount = 0;
+        ops[1].token = token;
+
+        _vault.managePoolBalance(ops);
+    }
 }
