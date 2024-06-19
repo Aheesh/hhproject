@@ -21,6 +21,8 @@ import "@balancer-labs/v2-interfaces/contracts/vault/IVault.sol";
 import "@balancer-labs/v2-interfaces/contracts/pool-utils/IManagedPool.sol";
 import "@balancer-labs/v2-interfaces/contracts/pool-utils/ILastCreatedPoolFactory.sol";
 
+//import "@balancer-labs/v2-solidity-utils/contracts/openzeppelin/Ownable.sol";
+
 /**
  * @title Controller
  * @notice This is a Managed Pool Controller that exists to be the owner of Managed Pools.
@@ -239,7 +241,7 @@ contract Controller {
         );
     }
 
-    //function to withdraw token cash balance from the pool
+    //function to withdraw token cash balance from the pool to asset manager
     function withdrawFromPool(IERC20 token, uint256 amount) public {
         IVault.PoolBalanceOp[] memory ops = new IVault.PoolBalanceOp[](2);
 
