@@ -61,15 +61,15 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     tokens: [
       //TODO - function to sort the token addresses numerically
       deploymentDrawToken.address,
-      deploymentA.address,
       deploymentB.address,
       deploymentStableToken.address,
+      deploymentA.address,
     ], //Odds at S:A:B:D 0.5:0.3:0.15:0.05
     normalizedWeights: [
       "50000000000000000",
-      "300000000000000000",
       "150000000000000000",
       "500000000000000000",
+      "300000000000000000",
     ],
     swapFeePercentage: "10000000000000000",
     swapEnabledOnStart: true,
@@ -144,6 +144,18 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const controllerTx = await drawTokenContract.setController(controllerAddress);
   controllerTx.wait();
   console.log("Controller value set", controllerTx.hash);
+
+  //Set the controller address for PlayerAToken
+  const playerATokenContract = await ethers.getContractAt(
+    "PlayerAToken",
+    deploymentA.address
+  );
+
+  const controllerTxPlayerA = await playerATokenContract.setController(
+    controllerAddress
+  );
+  controllerTxPlayerA.wait();
+  console.log("Controller value set", controllerTxPlayerA.hash);
 };
 
 export default func;
