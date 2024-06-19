@@ -1,4 +1,4 @@
-//script to connect to the pool and get pool tokens using the Controller contract getPoolTokens()
+//script to withdraw stable token from the pool. TODO transfer stable from controller to winners.
 
 import hre from "hardhat";
 import Contoller from "../artifacts/contracts/Controller.sol/Controller.json";
@@ -29,17 +29,6 @@ const func = async () => {
   console.log("Last Change Block: ", lastChangeBlock);
   console.log("Asset Manager: ", assetManager);
 
-  const [poolAddress, poolSpecialization] =
-    await controller.getPoolSpecialization();
-  console.log("Pool Address : ", poolAddress);
-  console.log("Pool Specialization : ", poolSpecialization);
-
-  const poolAuthorizer = await controller.getAuthorizer();
-  console.log("poolAuthorizer", poolAuthorizer);
-
-  const poolJoinExitEnabled = await controller.getJoinExitEnabled();
-  console.log("Managed Pool Join Exit Enabled status", poolJoinExitEnabled);
-
   const managedPoolControllerAddress =
     "0x07F318c701Ac7561f2e0f6549ec8A5F43dCFfa9B";
   console.log("Managed Pool Controller Address", managedPoolControllerAddress);
@@ -64,17 +53,11 @@ const func = async () => {
     await managedPoolContractSigner.setJoinExitEnabled(true);
   // console.log("Join Disbaled", poolJoinExitDisable);
 
-  const poolJoinExitEnabled2 = await controller.getJoinExitEnabled();
-  console.log("Managed Pool Join Exit Enabled status", poolJoinExitEnabled2);
-
-  let poolSwapStatus = await controller.getSwapEnabled();
-  console.log("Swap Enabled status", poolSwapStatus);
-
-  const poolSwapEnabled = await managedPoolContractSigner.setSwapEnabled(true);
-  // console.log("Swap Enabled status", poolSwapEnabled);
-
-  poolSwapStatus = await controller.getSwapEnabled();
-  console.log("Swap Enabled status", poolSwapStatus);
+  const withdrawTx = await managedPoolContractSigner.withdrawFromPool(
+    addresses[4],
+    cash
+  );
+  console.log("Withdraw Tx", withdrawTx);
 };
 
 try {
