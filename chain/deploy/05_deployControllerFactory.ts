@@ -60,14 +60,14 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     symbol: "GT",
     tokens: [
       //TODO - function to sort the token addresses numerically
-      deploymentDrawToken.address,
       deploymentB.address,
+      deploymentDrawToken.address,
       deploymentStableToken.address,
       deploymentA.address,
     ], //Odds at S:A:B:D 0.5:0.3:0.15:0.05
     normalizedWeights: [
-      "50000000000000000",
       "150000000000000000",
+      "50000000000000000",
       "500000000000000000",
       "300000000000000000",
     ],
@@ -156,6 +156,18 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   );
   controllerTxPlayerA.wait();
   console.log("Controller value set", controllerTxPlayerA.hash);
+
+  //Set the controller address for PlayerBToken
+  const playerBTokenContract = await ethers.getContractAt(
+    "PlayerBToken",
+    deploymentB.address
+  );
+
+  const controllerTxPlayerB = await playerBTokenContract.setController(
+    controllerAddress
+  );
+  controllerTxPlayerB.wait();
+  console.log("Controller value set", controllerTxPlayerB.hash);
 };
 
 export default func;

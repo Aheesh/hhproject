@@ -30,7 +30,7 @@ const func = async () => {
   console.log("Asset Manager: ", assetManager);
 
   const managedPoolControllerAddress =
-    "0x07F318c701Ac7561f2e0f6549ec8A5F43dCFfa9B";
+    "0x516863C9f880e450Ccd2f688b57285c14C3B1374";
   console.log("Managed Pool Controller Address", managedPoolControllerAddress);
   const provider = hre.ethers.provider;
   const managedPoolContract = new ethers.Contract(
