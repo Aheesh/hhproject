@@ -23,7 +23,7 @@ contract StableToken is ERC20 {
             "Deploying a Token with initial supply of",
             amount
         );
-        _mint(msg.sender, amount * 10 ** 18);
+        _mint(msg.sender, amount * 10 ** 6);
     }
 
     function approve(

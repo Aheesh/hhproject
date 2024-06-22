@@ -2,7 +2,9 @@
 
 import hre from "hardhat";
 import Contoller from "../artifacts/contracts/Controller.sol/Controller.json";
+import DrawToken from "../artifacts/contracts/DrawToken.sol/DrawToken.json";
 import { ethers } from "hardhat";
+import { EventLog } from "ethers";
 
 const func = async () => {
   console.log("Starting");
@@ -23,14 +25,14 @@ const func = async () => {
   console.log("Total Pool Tokens Amount: ", totalBalance);
 
   const [cash, managed, lastChangeBlock, assetManager] =
-    await controller.getPoolTokenInfo(addresses[4]);
+    await controller.getPoolTokenInfo(addresses[1]);
   console.log("Cash balance: ", cash);
   console.log("Managed balance: ", managed);
   console.log("Last Change Block: ", lastChangeBlock);
   console.log("Asset Manager: ", assetManager);
 
   const managedPoolControllerAddress =
-    "0x516863C9f880e450Ccd2f688b57285c14C3B1374";
+    "0x41802bE24561e1308C3E33A6dcBF6596c28e5E1b";
   console.log("Managed Pool Controller Address", managedPoolControllerAddress);
   const provider = hre.ethers.provider;
   const managedPoolContract = new ethers.Contract(
@@ -54,10 +56,37 @@ const func = async () => {
   // console.log("Join Disbaled", poolJoinExitDisable);
 
   const withdrawTx = await managedPoolContractSigner.withdrawFromPool(
-    addresses[4],
+    addresses[1],
     cash
   );
   console.log("Withdraw Tx", withdrawTx);
+
+  const drawTokenAddress = addresses[4];
+  console.log("Draw Token Address", drawTokenAddress);
+  const drawTokenContract = new ethers.Contract(
+    drawTokenAddress,
+    DrawToken.abi,
+    provider
+  );
+
+  const pastEvents = await drawTokenContract.queryFilter(
+    "TokenTransfer",
+    20142800,
+    20142900
+  );
+  const winnersArray: string[] = [];
+  pastEvents.forEach((event) => {
+    const winnerAddress = (event as EventLog).args[0];
+    console.log((event as EventLog).args[0]);
+    winnersArray.push(winnerAddress);
+  });
+
+  //display unique values from winnersArray
+  const winners = [...new Set(winnersArray)];
+  console.log("Winners", winners);
+
+  const winnerBalance = await drawTokenContract.balanceOf(winners[0]);
+  console.log("Winner Balance", winnerBalance);
 };
 
 try {

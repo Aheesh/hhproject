@@ -21,15 +21,16 @@ import "@balancer-labs/v2-interfaces/contracts/vault/IVault.sol";
 import "@balancer-labs/v2-interfaces/contracts/pool-utils/IManagedPool.sol";
 import "@balancer-labs/v2-interfaces/contracts/pool-utils/ILastCreatedPoolFactory.sol";
 
-//import "@balancer-labs/v2-solidity-utils/contracts/openzeppelin/Ownable.sol";
+import "@balancer-labs/v2-solidity-utils/contracts/openzeppelin/Ownable.sol";
 
 /**
  * @title Controller
  * @notice This is a Managed Pool Controller that exists to be the owner of Managed Pools.
  */
-contract Controller {
+contract Controller is Ownable {
     IVault private immutable _vault;
     bytes32 private immutable _poolId;
+    bool private _distributeWinningTokens = false;
 
     constructor(IVault vault, bytes32 poolId) {
         if (poolId == 0x0) {
@@ -70,7 +71,6 @@ contract Controller {
         address[] memory tokens = new address[](tokenContracts.length);
         for (uint i = 0; i < tokenContracts.length; i++) {
             tokens[i] = address(tokenContracts[i]);
-            console.log("getPoolTokens: Tokens %s", tokens[i]);
         }
 
         return (tokens, balances, totalBalance);
@@ -86,10 +86,6 @@ contract Controller {
             uint256 lastChangeBlock,
             address assetManager
         ) = _vault.getPoolTokenInfo(_poolId, token);
-        console.log("getPoolTokensInfo: Cash Balance %s", cashBalance);
-        console.log("getPoolTokensInfo: Managed Balance %s", managedBalance);
-        console.log("getPoolTokensInfo: Last Change Block %s", lastChangeBlock);
-        console.log("getPoolTokensInfo: Asset Manager %s", assetManager);
         return (cashBalance, managedBalance, lastChangeBlock, assetManager);
     }
 
@@ -102,33 +98,17 @@ contract Controller {
         address poolAddress;
         IVault.PoolSpecialization poolSpecialization;
         (poolAddress, poolSpecialization) = _vault.getPool(_poolId);
-        console.log("getPoolSpecialization: Pool Address", poolAddress);
         return (poolAddress, poolSpecialization);
-    }
-
-    //Function to allow EOA to join the pool calling the IVault.joinPool function
-
-    function joinPool(
-        address sender,
-        address recipient,
-        IVault.JoinPoolRequest memory request
-    ) external payable {
-        console.log("Controller - joinPool() requst");
-        _vault.joinPool(_poolId, sender, recipient, request);
     }
 
     //function to check if joining and exiting pool is enabled
     function getJoinExitEnabled() external view returns (bool) {
-        console.log(
-            "get Managed pool Join / Exit status - getJoinExitEnabled "
-        );
         (address poolAddress, ) = _vault.getPool(_poolId);
         return IManagedPool(poolAddress).getJoinExitEnabled();
     }
 
     //function to check status of the pool
     function getSwapEnabled() external view returns (bool) {
-        console.log("Managed Pool getSwapEnabled");
         (address poolAddress, ) = _vault.getPool(_poolId);
         return IManagedPool(poolAddress).getSwapEnabled();
     }
@@ -136,56 +116,49 @@ contract Controller {
     //function to set swap enabled flag
     function setSwapEnabled(bool swapEnabled) public {
         (address poolAddress, ) = _vault.getPool(_poolId);
-        console.log("Managed Pool setSwapEnabled = ", swapEnabled);
         return IManagedPool(poolAddress).setSwapEnabled(swapEnabled);
     }
 
     //Function to set Managed Pool Join / Exit flag
     function setJoinExitEnabled(bool joinExitEnabled) public {
         (address poolAddress, ) = _vault.getPool(_poolId);
-        console.log("Managed Pool setJoinExitEnabled");
         return IManagedPool(poolAddress).setJoinExitEnabled(joinExitEnabled);
-    }
-
-    //function to get Authorizer
-    function getAuthorizer() public view returns (IAuthorizer) {
-        return _vault.getAuthorizer();
     }
 
     // Approve the Vault contract to spend tokens
     function approveVault(address token, uint256 amount) public {
-        console.log(
-            "Controller - approveToken() request",
-            msg.sender,
-            address(this),
-            amount
-        );
+        // console.log(
+        //     "Controller - approveToken() request",
+        //     msg.sender,
+        //     address(this),
+        //     amount
+        // );
         IERC20(token).approve(address(_vault), amount);
-        console.log(
-            "Controller Allowance of token",
-            token,
-            IERC20(token).allowance(address(this), address(_vault))
-        );
+        // console.log(
+        //     "Controller Allowance of token",
+        //     token,
+        //     IERC20(token).allowance(address(this), address(_vault))
+        // );
     }
 
     //function to transfer token to controller contract
     function transferToken(address token, uint256 amount) public {
-        console.log(
-            "Controller - transferToken function call - start ",
-            amount
-        );
-        console.log(
-            "Controller - transferToken function call - start -->Current Allowance ",
-            IERC20(token).allowance(msg.sender, address(this))
-        );
+        // console.log(
+        //     "Controller - transferToken function call - start ",
+        //     amount
+        // );
+        // console.log(
+        //     "Controller - transferToken function call - start -->Current Allowance ",
+        //     IERC20(token).allowance(msg.sender, address(this))
+        // );
         if (IERC20(token).allowance(msg.sender, address(this)) >= amount) {
             IERC20(token).transferFrom(msg.sender, address(this), amount);
-            console.log(
-                "Controller - transferToken function call - end",
-                IERC20(token).balanceOf(address(this))
-            );
+            // console.log(
+            //     "Controller - transferToken function call - end",
+            //     IERC20(token).balanceOf(address(this))
+            // );
         } else {
-            console.log("Get additiona allowance");
+            // console.log("Get additiona allowance");
         }
     }
 
@@ -213,9 +186,9 @@ contract Controller {
 
         uint256 JOIN_KIND_INIT = 0;
         bytes memory initUserData = abi.encode(JOIN_KIND_INIT, amountsIn);
-        console.log(
-            "Controller - initPool() initUserData ===? check next line"
-        );
+        // console.log(
+        //     "Controller - initPool() initUserData ===? check next line"
+        // );
         console.logBytes(initUserData);
 
         IVault.JoinPoolRequest memory initJoinPoolRequest = IVault
@@ -225,24 +198,24 @@ contract Controller {
                 userData: initUserData,
                 fromInternalBalance: false
             });
-        console.log(
-            "Controller - initPool() request msg.sender is ",
-            msg.sender
-        );
+        // console.log(
+        //     "Controller - initPool() request msg.sender is ",
+        //     msg.sender
+        // );
         _vault.joinPool(
             _poolId,
             address(this),
             address(this),
             initJoinPoolRequest
         );
-        console.log(
-            "Controller - initPool() request done for controller ",
-            address(this)
-        );
+        // console.log(
+        //     "Controller - initPool() request done for controller ",
+        //     address(this)
+        // );
     }
 
     //function to withdraw token cash balance from the pool to asset manager
-    function withdrawFromPool(IERC20 token, uint256 amount) public {
+    function withdrawFromPool(IERC20 token, uint256 amount) public onlyOwner {
         IVault.PoolBalanceOp[] memory ops = new IVault.PoolBalanceOp[](2);
 
         //Withdraw token, creating a non-zero 'managed' balance in the Pool.
@@ -258,5 +231,29 @@ contract Controller {
         ops[1].token = token;
 
         _vault.managePoolBalance(ops);
+        _distributeWinningTokens = true;
+    }
+
+    //function to transfer stable token from controller to winning token holders
+    function batchTransfer(
+        address[] memory recipients,
+        uint256[] memory amounts,
+        IERC20 token
+    ) public onlyOwner {
+        require(_distributeWinningTokens, "stable withdraw not done");
+        (address poolAddress, ) = _vault.getPool(_poolId);
+        require(
+            !IManagedPool(poolAddress).getJoinExitEnabled(),
+            "Join/Exit is enabled"
+        );
+        require(!IManagedPool(poolAddress).getSwapEnabled(), "Swap enabled");
+        require(recipients.length == amounts.length, "Array length mismatch");
+        for (uint i = 0; i < recipients.length; i++) {
+            require(
+                token.transfer(recipients[i], amounts[i]),
+                "Transfer failed"
+            );
+            console.log("Transferred ", amounts[i], " to ", recipients[i]);
+        }
     }
 }
