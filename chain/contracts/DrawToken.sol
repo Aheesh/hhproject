@@ -21,6 +21,12 @@ contract DrawToken is ERC20, Ownable {
         address indexed spender,
         uint256 value
     );
+    event TokenTransfer(address indexed to, uint256 value);
+    event TokenTransferFrom(
+        address indexed from,
+        address indexed to,
+        uint256 value
+    );
 
     constructor(address _vault, uint256 amount) ERC20("DrawToken", "DT") {
         console.log(
@@ -58,6 +64,7 @@ contract DrawToken is ERC20, Ownable {
         );
         console.log(" transfer call from msg.sender ==>", msg.sender);
         super.transfer(_to, _value);
+        emit TokenTransfer(_to, _value);
         return true;
     }
 
@@ -71,6 +78,7 @@ contract DrawToken is ERC20, Ownable {
             "Transfer only permitted from deployer or vault"
         );
         super.transferFrom(_from, _to, _value);
+        emit TokenTransferFrom(_from, _to, _value);
         return true;
     }
 
