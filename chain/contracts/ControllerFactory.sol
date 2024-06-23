@@ -171,6 +171,8 @@ contract ControllerFactory is Ownable {
             "ControllerFactory create(): Controller created",
             actualControllerAddress
         );
+        // set controller owner to deployer
+        Controller(actualControllerAddress).transferOwnership(msg.sender);
 
         emit ControllerCreated(actualControllerAddress, pool.getPoolId());
     }

@@ -27,9 +27,11 @@ const config: HardhatUserConfig = {
   namedAccounts: {
     deployer: {
       default: 0,
+      localhost: 0,
     },
     user1: {
       default: 1,
+      localhost: 1,
     },
   },
   networks: {
@@ -55,6 +57,7 @@ const config: HardhatUserConfig = {
       accounts: [deployerPrivateKey],
     },
   },
+
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,
   },
