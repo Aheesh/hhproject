@@ -7,6 +7,7 @@ import { ControllerFactory } from "../typechain-types/contracts/ControllerFactor
 import controllerFactoryABI from "../artifacts/contracts/ControllerFactory.sol/ControllerFactory.json";
 import { ethers } from "hardhat";
 import tokenDrawABI from "../artifacts/contracts/DrawToken.sol/DrawToken.json";
+import controllerABI from "../artifacts/contracts/Controller.sol/Controller.json";
 
 const vaultAddress = "0xBA12222222228d8Ba445958a75a0704d566BF2C8";
 const managedPoolAddressMainnet = "0xBF904F9F340745B4f0c4702c7B6Ab1e808eA6b93";
@@ -168,6 +169,19 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   );
   controllerTxPlayerB.wait();
   console.log("Controller value set", controllerTxPlayerB.hash);
+
+  //check managed pool controller owner address
+  const managedPoolControllerContract = await ethers.getContractAt(
+    "Controller",
+    controllerAddress
+  );
+
+  const managedPoolControllerContractOwner =
+    await managedPoolControllerContract.owner();
+  console.log(
+    "Managed Pool Controller Owner Address",
+    managedPoolControllerContractOwner
+  );
 };
 
 export default func;
