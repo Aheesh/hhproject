@@ -10,15 +10,16 @@ import tokenDrawABI from "../artifacts/contracts/DrawToken.sol/DrawToken.json";
 import controllerABI from "../artifacts/contracts/Controller.sol/Controller.json";
 
 const vaultAddress = "0xBA12222222228d8Ba445958a75a0704d566BF2C8";
-const managedPoolAddressMainnet = "0xBF904F9F340745B4f0c4702c7B6Ab1e808eA6b93";
-//const managedPoolAddressSepolia = "0x63e179C5b6d54B2c2e36b9cE4085EF5A8C86D50c";
+//const managedPoolAddressMainnet = "0xBF904F9F340745B4f0c4702c7B6Ab1e808eA6b93";
+const managedPoolAddressSepolia = "0x63e179C5b6d54B2c2e36b9cE4085EF5A8C86D50c";
+//const managedPoolAddressBase = "0x9a62C91626d39D0216b3959112f9D4678E20134d";
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { getNamedAccounts, deployments } = hre;
   const { deploy } = deployments;
   const { deployer } = await getNamedAccounts();
   await deploy("ControllerFactory", {
     from: deployer,
-    args: [vaultAddress, managedPoolAddressMainnet],
+    args: [vaultAddress, managedPoolAddressSepolia],
     log: true,
     autoMine: true,
   });
@@ -41,11 +42,19 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     deploymentDrawToken.address
   );
 
-  const deploymentStableToken = await hre.deployments.get("StableToken");
-  console.log(
-    "deployed contract address StableToken 🐎 ⚖️ 🐎 === 🐎 ⚖️ 🐎",
-    deploymentStableToken.address
-  );
+  // const deploymentStableToken = await hre.deployments.get("StableToken");
+  // console.log(
+  //   "deployed contract address StableToken 🐎 ⚖️ 🐎 === 🐎 ⚖️ 🐎",
+  //   deploymentStableToken.address
+  // );
+
+  //USDC address on Sepolia
+  console.log("Network name", hre.network.name);
+  let deploymentStableToken = "Missing Assignment";
+  if (hre.network.name === "sepolia") {
+    deploymentStableToken = "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238";
+  }
+  console.log("Stable token address", deploymentStableToken);
 
   const deployment = await hre.deployments.get("ControllerFactory");
   console.log(
@@ -61,15 +70,15 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     symbol: "GT",
     tokens: [
       //TODO - function to sort the token addresses numerically
-      deploymentStableToken.address,
-      deploymentB.address,
       deploymentA.address,
+      deploymentStableToken,
+      deploymentB.address,
       deploymentDrawToken.address,
     ], //Odds at S:A:B:D 0.5:0.3:0.15:0.05
     normalizedWeights: [
+      "300000000000000000",
       "500000000000000000",
       "150000000000000000",
-      "300000000000000000",
       "50000000000000000",
     ],
     swapFeePercentage: "10000000000000000",

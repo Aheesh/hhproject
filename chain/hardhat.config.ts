@@ -1,5 +1,6 @@
-import * as dotenv from "dotenv";
-dotenv.config();
+// import * as dotenv from "dotenv";
+// dotenv.config();
+import "dotenv/config";
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 import "hardhat-deploy";
@@ -28,6 +29,7 @@ const config: HardhatUserConfig = {
     deployer: {
       default: 0,
       localhost: 0,
+      sepolia: 0,
     },
     user1: {
       default: 1,
