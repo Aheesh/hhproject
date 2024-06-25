@@ -127,18 +127,7 @@ contract Controller is Ownable {
 
     // Approve the Vault contract to spend tokens
     function approveVault(address token, uint256 amount) public {
-        // console.log(
-        //     "Controller - approveToken() request",
-        //     msg.sender,
-        //     address(this),
-        //     amount
-        // );
         IERC20(token).approve(address(_vault), amount);
-        // console.log(
-        //     "Controller Allowance of token",
-        //     token,
-        //     IERC20(token).allowance(address(this), address(_vault))
-        // );
     }
 
     //function to transfer token to controller contract
@@ -227,7 +216,7 @@ contract Controller is Ownable {
         //Clear the 'managed' balance in the Pool.
         ops[1].kind = IVault.PoolBalanceOpKind.UPDATE;
         ops[1].poolId = _poolId;
-        ops[1].amount = 0;
+        ops[1].amount = 0; // update logic to set balance - amount withdrwan
         ops[1].token = token;
 
         _vault.managePoolBalance(ops);

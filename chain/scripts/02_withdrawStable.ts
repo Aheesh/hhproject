@@ -2,10 +2,10 @@
 
 import hre from "hardhat";
 import Contoller from "../artifacts/contracts/Controller.sol/Controller.json";
-import DrawToken from "../artifacts/contracts/DrawToken.sol/DrawToken.json";
-import stableToken from "../artifacts/contracts/Stable.sol/StableToken.json";
+import playerAToken from "../artifacts/contracts/PlayerAToken.sol/PlayerAToken.json";
+import stableToken from "../scripts/abi/tokenStable.json"; //USDC proxy contract
 import { ethers } from "hardhat";
-import { AddressLike, BigNumberish, EventLog } from "ethers";
+import { AddressLike, EventLog } from "ethers";
 
 const func = async () => {
   console.log("Starting");
@@ -24,30 +24,30 @@ const func = async () => {
   console.log("Total Pool Tokens Amount: ", totalBalance);
 
   //Win token balance
-  let [cash, managed, lastChangeBlock, assetManager] =
+  const [cash, managed, lastChangeBlock, assetManager] =
     await controller.getPoolTokenInfo(addresses[1]);
   console.log("Cash balance: ", cash);
   console.log("Managed balance: ", managed);
   console.log("Last Change Block: ", lastChangeBlock);
   console.log("Asset Manager: ", assetManager);
 
-  const managedPoolControllerAddress = assetManager;
-  console.log("Managed Pool Controller Address", managedPoolControllerAddress);
+  //const managedPoolControllerAddress = assetManager;
+  console.log("Managed Pool Controller Address", assetManager);
   const provider = hre.ethers.provider;
-  const managedPoolContract = new ethers.Contract(
-    managedPoolControllerAddress,
-    Contoller.abi,
-    provider
-  );
-  const managedPoolId = await managedPoolContract.getPoolId();
-  console.log("Managed Pool Id", managedPoolId);
+  // const managedPoolContract = new ethers.Contract(
+  //   managedPoolControllerAddress,
+  //   Contoller.abi,
+  //   provider
+  // );
+  // const managedPoolId = await managedPoolContract.getPoolId();
+  // console.log("Managed Pool Id", managedPoolId);
 
   const sender = await hre.getNamedAccounts();
   console.log("Sender ===> ", sender.user1);
   const deployer = await ethers.getSigner(sender.deployer);
   console.log("deployer ===> ", deployer.address);
   const managedPoolContractSigner = new ethers.Contract(
-    managedPoolControllerAddress,
+    assetManager,
     Contoller.abi,
     deployer
   );
@@ -63,32 +63,33 @@ const func = async () => {
   const poolSwapState = await managedPoolContractSigner.setSwapEnabled(false);
   poolSwapState.wait();
 
-  console.log("Withdraw from Pool ==> Check Stable", addresses[1]);
-  console.log("Withdraw from Pool ==> Check Cash", cash);
-  if (cash) {
-    const withdrawTx = await managedPoolContractSigner.withdrawFromPool(
-      addresses[1],
-      cash
-    );
-    console.log("Withdraw Tx", withdrawTx);
-  }
-  const drawTokenAddress = addresses[4];
-  console.log("Draw Token Address", drawTokenAddress);
-  const drawTokenContract = new ethers.Contract(
-    drawTokenAddress,
-    DrawToken.abi,
+  //Check address of holders of game winning outcome token
+  const winTokenAddress = addresses[1];
+  console.log("Game winning Token Address", winTokenAddress);
+  const winTokenContract = new ethers.Contract(
+    winTokenAddress,
+    playerAToken.abi, //Check the ABI for the winning outcome token - TODO refactor to use the correct ABI
     provider
   );
 
-  const pastEvents = await drawTokenContract.queryFilter(
-    "TokenTransfer",
-    20142800,
-    20142999
+  //Parse events for all token transfers
+  provider.getBlockNumber().then((latestBlockNumber) => {
+    console.log(`The latest block number is ${latestBlockNumber}`);
+  });
+
+  const blockheight = await provider.getBlockNumber();
+  console.log("Block Height", blockheight);
+
+  const pastEvents = await winTokenContract.queryFilter(
+    "Transfer", //TODO refactor to use the game token events and not erc20 OZ transfer event
+    lastChangeBlock,
+    blockheight //latest block height
   );
+  console.log("Past Events", pastEvents);
   const winnersArray: string[] = [];
   pastEvents.forEach((event) => {
-    const winnerAddress = (event as EventLog).args[0];
-    console.log((event as EventLog).args[0]);
+    const winnerAddress = (event as EventLog).args[1]; //TODO args 0 for TransferToken event , erc20 Transfer event args 1
+    console.log((event as EventLog).args[1]);
     winnersArray.push(winnerAddress);
   });
 
@@ -99,33 +100,51 @@ const func = async () => {
   const winnersAddressLike = winners.map((winner) => winner as AddressLike);
   console.log("Winners AddressLike", winnersAddressLike);
 
-  const winnerBalance = await drawTokenContract.balanceOf(winners[0]);
+  const winnerBalance = await winTokenContract.balanceOf(winners[0]); //TODO refactor to get balance of all winners
   console.log("Winner Balance", winnerBalance);
 
-  // //stable token balance
-  // [cash, managed, lastChangeBlock, assetManager] =
-  //   await controller.getPoolTokenInfo(addresses[1]);
-  console.log("Cash balance: ", cash);
-  // console.log("Managed balance: ", managed);
-  // console.log("Last Change Block: ", lastChangeBlock);
-  // console.log("Asset Manager: ", assetManager);
+  //stable token balance
+  const [
+    stableCash,
+    stableManagedBalance,
+    stableLastChangeBlock,
+    stableAssetManager,
+  ] = await controller.getPoolTokenInfo(addresses[2]);
+  console.log("Cash balance: ", stableCash);
+  console.log("Managed balance: ", stableManagedBalance);
+  console.log("Last Change Block: ", stableLastChangeBlock);
+  console.log("Asset Manager: ", stableAssetManager);
 
-  const winnings = [10000000n, 10000000n, 10000000n];
+  const winnings = 102000000n; //[stableCash];
+  //declare an array and store winnings in the array
+  const winningsArray = [];
+  winningsArray.push(winnings);
 
-  const stableTokenAddress = addresses[1];
+  const stableTokenAddress = addresses[2];
   console.log("Stable Token Address", stableTokenAddress);
   const stableTokenContract = new ethers.Contract(
     stableTokenAddress,
     stableToken.abi,
     provider
   );
+
+  //Withdraw stable token from pool to managed pool controller
+  console.log("Withdraw from Pool ==> Check Stable", addresses[2]);
+  console.log("Withdraw from Pool ==> Check Cash", cash);
+  if (cash) {
+    const withdrawTx = await managedPoolContractSigner.withdrawFromPool(
+      addresses[2],
+      stableCash
+    );
+    console.log("Withdraw Tx", withdrawTx);
+  }
   let walletBalance = await stableTokenContract.balanceOf(winners[0]);
   console.log("Wallet Balance Before transfer", walletBalance);
 
   const winTransfer = await managedPoolContractSigner.batchTransfer(
     winnersAddressLike,
-    winnings,
-    addresses[1]
+    winningsArray,
+    addresses[2]
   );
 
   walletBalance = await stableTokenContract.balanceOf(winners[0]);
