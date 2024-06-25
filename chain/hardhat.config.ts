@@ -34,6 +34,7 @@ const config: HardhatUserConfig = {
     user1: {
       default: 1,
       localhost: 1,
+      sepolia: 1,
     },
   },
   networks: {
