@@ -11,19 +11,20 @@ import controllerABI from "../artifacts/contracts/Controller.sol/Controller.json
 
 const vaultAddress = "0xBA12222222228d8Ba445958a75a0704d566BF2C8";
 //const managedPoolAddressMainnet = "0xBF904F9F340745B4f0c4702c7B6Ab1e808eA6b93";
-const managedPoolAddressSepolia = "0x63e179C5b6d54B2c2e36b9cE4085EF5A8C86D50c";
-//const managedPoolAddressBase = "0x9a62C91626d39D0216b3959112f9D4678E20134d";
+//const managedPoolAddressSepolia = "0x63e179C5b6d54B2c2e36b9cE4085EF5A8C86D50c";
+const managedPoolAddressBase = "0x9a62C91626d39D0216b3959112f9D4678E20134d";
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { getNamedAccounts, deployments } = hre;
   const { deploy } = deployments;
   const { deployer } = await getNamedAccounts();
   await deploy("ControllerFactory", {
     from: deployer,
-    args: [vaultAddress, managedPoolAddressSepolia],
+    args: [vaultAddress, managedPoolAddressBase],
     log: true,
     autoMine: true,
   });
 
+  console.log("Deployer Address: ", deployer);
   const deploymentA = await hre.deployments.get("PlayerAToken");
   console.log(
     "deployed contract address 🤾🏻‍♂️ Token A 🤾🏻‍♂️ ===",
@@ -50,9 +51,11 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
   //USDC address on Sepolia
   console.log("Network name", hre.network.name);
-  let deploymentStableToken = "Missing Assignment";
+  let deploymentStableToken = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"; //USDC address on Mainnet
   if (hre.network.name === "sepolia") {
     deploymentStableToken = "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238";
+  } else if (hre.network.name === "base") {
+    deploymentStableToken = "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed"; //DEGEN address on Base
   }
   console.log("Stable token address", deploymentStableToken);
 
@@ -70,16 +73,16 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     symbol: "GT",
     tokens: [
       //TODO - function to sort the token addresses numerically
-      deploymentA.address,
       deploymentStableToken,
-      deploymentB.address,
       deploymentDrawToken.address,
+      deploymentA.address,
+      deploymentB.address,
     ], //Odds at S:A:B:D 0.5:0.3:0.15:0.05
     normalizedWeights: [
-      "300000000000000000",
       "500000000000000000",
-      "150000000000000000",
       "50000000000000000",
+      "300000000000000000",
+      "150000000000000000",
     ],
     swapFeePercentage: "10000000000000000",
     swapEnabledOnStart: true,

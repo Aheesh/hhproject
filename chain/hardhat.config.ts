@@ -8,6 +8,7 @@ import "@nomicfoundation/hardhat-verify";
 
 const providerApiKey = process.env.ALCHEMY_API_KEY;
 const providerInfuraKey = process.env.INFURA_API_KEY;
+const providerBaseKey = process.env.BASE_PROVIDER_API_KEY;
 // If not set, it uses the hardhat account 0 private key.
 const deployerPrivateKey =
   process.env.DEPLOYER_PRIVATE_KEY ??
@@ -15,6 +16,9 @@ const deployerPrivateKey =
 const user1PrivateKey =
   process.env.USER1_PRIVATE_KEY ??
   "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d";
+const deployerBasePrivateKey =
+  process.env.BASE_DEPLOYER_PRIVATE_KEY ??
+  "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
 const etherscanApiKey = process.env.ETHERSCAN_API_KEY;
 
 const config: HardhatUserConfig = {
@@ -30,6 +34,7 @@ const config: HardhatUserConfig = {
       default: 0,
       localhost: 0,
       sepolia: 0,
+      base: 0,
     },
     user1: {
       default: 1,
@@ -58,6 +63,10 @@ const config: HardhatUserConfig = {
     sepolia: {
       url: `https://eth-sepolia.g.alchemy.com/v2/${providerApiKey}`,
       accounts: [deployerPrivateKey],
+    },
+    base: {
+      url: `https://base-mainnet.g.alchemy.com/v2/${providerBaseKey}`,
+      accounts: [deployerBasePrivateKey],
     },
   },
 
