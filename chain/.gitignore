@@ -1,10 +1,12 @@
 node_modules
 .env
+.env.local
 
 # Hardhat files
 /cache
 /artifacts
 /deployments
+/deployments/localhost
 
 # TypeChain files
 /typechain

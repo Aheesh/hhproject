@@ -20,7 +20,7 @@ const deployYourContractB: DeployFunction = async function (
   });
 
   const deployment = await hre.deployments.get("PlayerBToken");
-  console.log("deployed contract address ===", deployment.address);
+  console.log("Deploy Script 02- deployed contract address ===", deployment.address);
 };
 
 export default deployYourContractB;

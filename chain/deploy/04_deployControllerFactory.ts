@@ -10,16 +10,16 @@ import tokenDrawABI from "../artifacts/contracts/DrawToken.sol/DrawToken.json";
 import controllerABI from "../artifacts/contracts/Controller.sol/Controller.json";
 
 const vaultAddress = "0xBA12222222228d8Ba445958a75a0704d566BF2C8";
-//const managedPoolAddressMainnet = "0xBF904F9F340745B4f0c4702c7B6Ab1e808eA6b93";
+const managedPoolAddressMainnet = "0xBF904F9F340745B4f0c4702c7B6Ab1e808eA6b93";
 //const managedPoolAddressSepolia = "0x63e179C5b6d54B2c2e36b9cE4085EF5A8C86D50c";
-const managedPoolAddressBase = "0x9a62C91626d39D0216b3959112f9D4678E20134d";
+//const managedPoolAddressBase = "0x9a62C91626d39D0216b3959112f9D4678E20134d";
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const { getNamedAccounts, deployments } = hre;
   const { deploy } = deployments;
   const { deployer } = await getNamedAccounts();
   await deploy("ControllerFactory", {
     from: deployer,
-    args: [vaultAddress, managedPoolAddressBase],
+    args: [vaultAddress, managedPoolAddressMainnet],
     log: true,
     autoMine: true,
   });
@@ -73,10 +73,10 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     symbol: "GT",
     tokens: [
       //TODO - function to sort the token addresses numerically
-      deploymentStableToken,
-      deploymentDrawToken.address,
-      deploymentA.address,
       deploymentB.address,
+      deploymentDrawToken.address,
+      deploymentStableToken,
+      deploymentA.address
     ], //Odds at S:A:B:D 0.5:0.3:0.15:0.05
     normalizedWeights: [
       "500000000000000000",
