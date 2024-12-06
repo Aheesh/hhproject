@@ -9,7 +9,7 @@ const deployYourContractA: DeployFunction = async function (
   const { deployer } = await hre.getNamedAccounts();
   const { deploy } = hre.deployments;
 
-  console.log("Network name", hre.network.name);
+  console.log("Deploy Script 01- Network name", hre.network.name);
   console.log("Deploy Script 01- Deployer Address: ", deployer);
 
   // Deploy Player A Token

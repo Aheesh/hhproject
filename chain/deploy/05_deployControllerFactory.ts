@@ -43,20 +43,20 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     deploymentDrawToken.address
   );
 
-  // const deploymentStableToken = await hre.deployments.get("StableToken");
-  // console.log(
-  //   "deployed contract address StableToken 🐎 ⚖️ 🐎 === 🐎 ⚖️ 🐎",
-  //   deploymentStableToken.address
-  // );
+  const deploymentStableToken = await hre.deployments.get("StableToken");
+  console.log(
+    "deployed contract address StableToken 🐎 ⚖️ 🐎 === 🐎 ⚖️ 🐎",
+    deploymentStableToken.address
+  );
 
   //USDC address on Sepolia
   console.log("Network name", hre.network.name);
-  let deploymentStableToken = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"; //USDC address on Mainnet
-  if (hre.network.name === "sepolia") {
-    deploymentStableToken = "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238";
-  } else if (hre.network.name === "base") {
-    deploymentStableToken = "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed"; //DEGEN address on Base
-  }
+  // let deploymentStableToken = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"; //USDC address on Mainnet
+  // if (hre.network.name === "sepolia") {
+  //   deploymentStableToken = "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238";
+  // } else if (hre.network.name === "base") {
+  //   deploymentStableToken = "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed"; //DEGEN address on Base
+  // }
   console.log("Stable token address", deploymentStableToken);
 
   const deployment = await hre.deployments.get("ControllerFactory");
@@ -68,22 +68,24 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
   ////////////////////////////Controller Pool Deployment////////////////////////
 
+  // Create array of token objects with addresses and their corresponding weights
+  const tokenConfig = [
+    { address: deploymentA.address, weight: "140000000000000000" }, // A: 0.14
+    { address: deploymentB.address, weight: "180000000000000000" }, // B: 0.18
+    { address: deploymentDrawToken.address, weight: "180000000000000000" }, // Draw: 0.18
+    { address: deploymentStableToken.address, weight: "500000000000000000" }, // Stable: 0.50
+  ];
+
+  // Sort tokens by address (numerically)
+  const sortedTokens = tokenConfig.sort((a, b) => 
+    BigInt(a.address) < BigInt(b.address) ? -1 : 1
+  );
+
   const minimalParams: ControllerFactory.MinimalPoolParamsStruct = {
     name: "GameToken",
     symbol: "GT",
-    tokens: [
-      //TODO - function to sort the token addresses numerically
-      deploymentB.address,
-      deploymentDrawToken.address,
-      deploymentStableToken,
-      deploymentA.address
-    ], //Odds at S:A:B:D 0.5:0.3:0.15:0.05
-    normalizedWeights: [
-      "500000000000000000",
-      "50000000000000000",
-      "300000000000000000",
-      "150000000000000000",
-    ],
+    tokens: sortedTokens.map(t => t.address),
+    normalizedWeights: sortedTokens.map(t => t.weight),
     swapFeePercentage: "10000000000000000",
     swapEnabledOnStart: true,
     managementAumFeePercentage: "10000000000000000",
