@@ -12,7 +12,7 @@ async function tokenCheck() {
     deployment.address
   );
 
-  const ControllerAddress = "0x07F318c701Ac7561f2e0f6549ec8A5F43dCFfa9B";
+  const ControllerAddress = "0x0763be8916ea5775020ee21eed25e54f4d15d5a8";
   console.log("Checking token balance for address", ControllerAddress);
   const balance = await controller.balanceOf(ControllerAddress);
   console.log("TokenA Balance", balance);

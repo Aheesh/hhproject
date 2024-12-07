@@ -1,3 +1,4 @@
+//ts-node script to initialize a weighted pool with 4 tokens (TokenA, TokenB, DrawToken, StableToken) 
 import * as dotenv from "dotenv";
 dotenv.config();
 import {
@@ -18,7 +19,7 @@ async function poolInit() {
   const balancerSDK = new BalancerSDK(config);
 
   // create a new provider
-  const provider = new ethers.JsonRpcProvider(config.rpcUrl);
+  const provider = new ethers.providers.JsonRpcProvider(config.rpcUrl);
 
   // get the signer account
   const pvtKey = process.env.ACCOUNT1_KEY;

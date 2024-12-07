@@ -4,6 +4,7 @@
 import hre from "hardhat";
 import Contoller from "../artifacts/contracts/Controller.sol/Controller.json";
 import { ethers } from "hardhat";
+import { ethers as hreEthers } from "hardhat";
 
 const func = async () => {
   console.log("Starting");

@@ -5,6 +5,7 @@ import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 import "hardhat-deploy";
 import "@nomicfoundation/hardhat-verify";
+import "@nomicfoundation/hardhat-ethers";
 
 const providerApiKey = process.env.ALCHEMY_API_KEY;
 const providerInfuraKey = process.env.INFURA_API_KEY;

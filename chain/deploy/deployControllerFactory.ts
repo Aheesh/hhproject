@@ -1,6 +1,7 @@
 //Deploy ControllerFactory contract
 
-import { ContractTransactionReceipt, EventLog } from "ethers";
+import { ContractReceipt } from "@ethersproject/contracts";
+import { utils } from "ethers";
 import { DeployFunction } from "hardhat-deploy/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { ControllerFactory } from "../typechain-types/contracts/ControllerFactory";
@@ -103,11 +104,10 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     await ContollerFactoryContract.isDisabled()
   );
 
-  const receipt = (await (
-    await ContollerFactoryContract.create(minimalParams)
-  ).wait()) as unknown as ContractTransactionReceipt;
+  const tx = await ContollerFactoryContract.create(minimalParams);
+  const receipt = await tx.wait();
 
-  console.log("05 deploy script -- receipt tx hash", receipt.hash);
+  console.log("05 deploy script -- receipt tx hash", tx.hash);
   ////////////////////////////////////////////////////////////////////////////
 
   //fetch poolId
@@ -115,17 +115,17 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     "🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 START - parsing logs 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 🪵 "
   );
 
-  const iface = new ethers.Interface(controllerFactoryABI.abi);
+  const iface = new utils.Interface(controllerFactoryABI.abi);
   // Parse the logs for ControllerCreated event
-  const events = receipt.logs.map((log) => {
+  const events = receipt.logs.map((log: { topics: string[], data: string }) => {
     const parsedLog = iface.parseLog(log);
     return parsedLog;
   });
-  const poolId = events.find((event) => event?.name === "ControllerCreated")
+  const poolId = events.find((event: { name?: string, args?: any }) => event?.name === "ControllerCreated")
     ?.args.poolId;
 
   const controllerAddress = events.find(
-    (event) => event?.name === "ControllerCreated"
+    (event: { name?: string, args?: any }) => event?.name === "ControllerCreated"
   )?.args.controller;
   console.log("PoolId 🏊 🏊 🏊 ===>>>>> 🏊 🏊 🏊", poolId);
   console.log(
