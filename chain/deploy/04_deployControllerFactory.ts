@@ -51,7 +51,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
   //USDC address on Sepolia
   console.log("Network name", hre.network.name);
-  let deploymentStableToken = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"; //USDC address on Mainnet
+  let deploymentStableToken = "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed"; //DEGEN address on BASE L2
   if (hre.network.name === "sepolia") {
     deploymentStableToken = "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238";
   } else if (hre.network.name === "base") {
@@ -68,22 +68,20 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
 
   ////////////////////////////Controller Pool Deployment////////////////////////
 
+  const tokenWeightPairs = [
+    { token: deploymentA.address, weight: "300000000000000000" },      // 30% = 0.3e18
+    { token: deploymentB.address, weight: "150000000000000000" },      // 15% = 0.15e18
+    { token: deploymentStableToken, weight: "500000000000000000" },    // 50% = 0.5e18
+    { token: deploymentDrawToken.address, weight: "50000000000000000" } // 5%  = 0.05e18
+  ].sort((a, b) => {
+    return BigInt(a.token) - BigInt(b.token) > 0n ? 1 : -1;
+  });
+
   const minimalParams: ControllerFactory.MinimalPoolParamsStruct = {
     name: "GameToken",
     symbol: "GT",
-    tokens: [
-      //TODO - function to sort the token addresses numerically
-      deploymentStableToken,
-      deploymentDrawToken.address,
-      deploymentA.address,
-      deploymentB.address,
-    ], //Odds at S:A:B:D 0.5:0.3:0.15:0.05
-    normalizedWeights: [
-      "500000000000000000",
-      "50000000000000000",
-      "300000000000000000",
-      "150000000000000000",
-    ],
+    tokens: tokenWeightPairs.map(pair => pair.token),
+    normalizedWeights: tokenWeightPairs.map(pair => pair.weight),
     swapFeePercentage: "10000000000000000",
     swapEnabledOnStart: true,
     managementAumFeePercentage: "10000000000000000",
