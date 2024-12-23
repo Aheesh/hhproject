@@ -43,20 +43,20 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     deploymentDrawToken.address
   );
 
-  // const deploymentStableToken = await hre.deployments.get("StableToken");
-  // console.log(
-  //   "deployed contract address StableToken 🐎 ⚖️ 🐎 === 🐎 ⚖️ 🐎",
-  //   deploymentStableToken.address
-  // );
+  const deploymentStableToken = await hre.deployments.get("StableToken");
+  console.log(
+    "deployed contract address StableToken 🐎 ⚖️ 🐎 === 🐎 ⚖️ 🐎",
+    deploymentStableToken.address
+  );
 
   //USDC address on Sepolia
   console.log("Network name", hre.network.name);
-  let deploymentStableToken = "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed"; //DEGEN address on BASE L2
-  if (hre.network.name === "sepolia") {
-    deploymentStableToken = "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238";
-  } else if (hre.network.name === "base") {
-    deploymentStableToken = "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed"; //DEGEN address on Base
-  }
+  // let deploymentStableToken = "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed"; //DEGEN address on BASE L2
+  // if (hre.network.name === "sepolia") {
+  //   deploymentStableToken = "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238";
+  // } else if (hre.network.name === "base") {
+  //   deploymentStableToken = "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed"; //DEGEN address on Base
+  // }
   console.log("Stable token address", deploymentStableToken);
 
   const deployment = await hre.deployments.get("ControllerFactory");
@@ -69,10 +69,10 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   ////////////////////////////Controller Pool Deployment////////////////////////
 
   const tokenWeightPairs = [
-    { token: deploymentA.address, weight: "300000000000000000" },      // 30% = 0.3e18
-    { token: deploymentB.address, weight: "150000000000000000" },      // 15% = 0.15e18
-    { token: deploymentStableToken, weight: "500000000000000000" },    // 50% = 0.5e18
-    { token: deploymentDrawToken.address, weight: "50000000000000000" } // 5%  = 0.05e18
+    { token: deploymentA.address, weight: "300000000000000000" },
+    { token: deploymentB.address, weight: "150000000000000000" },
+    { token: deploymentStableToken.address, weight: "500000000000000000" },
+    { token: deploymentDrawToken.address, weight: "50000000000000000" }
   ].sort((a, b) => {
     return BigInt(a.token) - BigInt(b.token) > 0n ? 1 : -1;
   });
