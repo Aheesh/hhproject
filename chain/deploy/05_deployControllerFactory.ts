@@ -57,7 +57,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   // } else if (hre.network.name === "base") {
   //   deploymentStableToken = "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed"; //DEGEN address on Base
   // }
-  console.log("Stable token address", deploymentStableToken);
+  console.log("Stable token address", deploymentStableToken.address);
 
   const deployment = await hre.deployments.get("ControllerFactory");
   console.log(

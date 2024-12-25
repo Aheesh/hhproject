@@ -38,7 +38,7 @@ const func = async () => {
   console.log("Managed Pool Join Exit Enabled status", poolJoinExitEnabled);
 
   const managedPoolControllerAddress =
-    "0x361A42aD8bB379d077504b59520F01c27c90C282";
+    "0xe8a1616ADbE364DCd41866228AE193C65eC2F6cA";
   console.log("Managed Pool Controller Address", managedPoolControllerAddress);
   const provider = hre.ethers.provider;
   const managedPoolContract = new ethers.Contract(
@@ -57,8 +57,8 @@ const func = async () => {
     Contoller.abi,
     signer
   );
-  const poolJoinExitDisable =
-    await managedPoolContractSigner.setJoinExitEnabled(true);
+  //const poolJoinExitDisable =
+   // await managedPoolContractSigner.setJoinExitEnabled(true);
   // console.log("Join Disbaled", poolJoinExitDisable);
 
   const poolJoinExitEnabled2 = await controller.getJoinExitEnabled();
@@ -67,7 +67,7 @@ const func = async () => {
   let poolSwapStatus = await controller.getSwapEnabled();
   console.log("Swap Enabled status", poolSwapStatus);
 
-  const poolSwapEnabled = await managedPoolContractSigner.setSwapEnabled(true);
+  //const poolSwapEnabled = await managedPoolContractSigner.setSwapEnabled(true);
   // console.log("Swap Enabled status", poolSwapEnabled);
 
   poolSwapStatus = await controller.getSwapEnabled();

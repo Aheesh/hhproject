@@ -14,7 +14,7 @@ const deployYourContractStable: DeployFunction = async function (
   // Deploy Stable Token
   await deploy("StableToken", {
     from: deployer,
-    args: [1000], //no vault address in args for stable token
+    args: [2000], //no vault address in args for stable token
     log: true,
     autoMine: true,
   });
