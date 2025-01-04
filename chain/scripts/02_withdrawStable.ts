@@ -21,11 +21,11 @@ const func = async () => {
   const [addresses, balance, totalBalance] = await controller.getPoolTokens();
   console.log("Pool Tokens Addresses: ", addresses);
   console.log("Pool Tokens Amounts: ", balance);
-  console.log("Total Pool Tokens Amount: ", totalBalance);
+  console.log("Last change block: ", totalBalance); //totalBalance is the last change block controller contract TODO refactor to use the last change block from the vault
 
   //Win token balance
   const [cash, managed, lastChangeBlock, assetManager] =
-    await controller.getPoolTokenInfo(addresses[1]);
+    await controller.getPoolTokenInfo(addresses[3]);
   console.log("Cash balance: ", cash);
   console.log("Managed balance: ", managed);
   console.log("Last Change Block: ", lastChangeBlock);
@@ -59,7 +59,7 @@ const func = async () => {
   const poolJoinExitDisable =
     await managedPoolContractSigner.setJoinExitEnabled(false);
   poolJoinExitDisable.wait();
-  console.log("Join Exit Disabled", poolJoinExitDisable);
+  //console.log("Join Exit Disabled", poolJoinExitDisable);
   const poolSwapState = await managedPoolContractSigner.setSwapEnabled(false);
   poolSwapState.wait();
 
@@ -85,7 +85,7 @@ const func = async () => {
     lastChangeBlock,
     blockheight //latest block height
   );
-  console.log("Past Events", pastEvents);
+ // console.log("Past Events", pastEvents);
   const winnersArray: string[] = [];
   pastEvents.forEach((event) => {
     const winnerAddress = (event as EventLog).args[1]; //TODO args 0 for TransferToken event , erc20 Transfer event args 1
@@ -93,6 +93,7 @@ const func = async () => {
     winnersArray.push(winnerAddress);
   });
 
+  console.log("Winners Array", winnersArray); 
   //display unique values from winnersArray
   const winners = [...new Set(winnersArray)];
   console.log("Winners", winners);
@@ -100,8 +101,16 @@ const func = async () => {
   const winnersAddressLike = winners.map((winner) => winner as AddressLike);
   console.log("Winners AddressLike", winnersAddressLike);
 
-  const winnerBalance = await winTokenContract.balanceOf(winners[0]); //TODO refactor to get balance of all winners
-  console.log("Winner Balance", winnerBalance);
+  // Get balance for all winners
+  const winnerBalances = await Promise.all(
+    winners.map(async (winner) => {
+      const balance = await winTokenContract.balanceOf(winner);
+      return { winner, balance };
+    })
+  );
+  console.log("Winner Balances:", winnerBalances.map(({ winner, balance }) => 
+    `${winner}: ${balance.toString()}`
+  ));
 
   //stable token balance
   const [
@@ -141,11 +150,11 @@ const func = async () => {
   let walletBalance = await stableTokenContract.balanceOf(winners[0]);
   console.log("Wallet Balance Before transfer", walletBalance);
 
-  const winTransfer = await managedPoolContractSigner.batchTransfer(
-    winnersAddressLike,
-    winningsArray,
-    addresses[2]
-  );
+  // const winTransfer = await managedPoolContractSigner.batchTransfer(
+  //   winnersAddressLike,
+  //   winningsArray,
+  //   addresses[2]
+  // );
 
   walletBalance = await stableTokenContract.balanceOf(winners[0]);
 
