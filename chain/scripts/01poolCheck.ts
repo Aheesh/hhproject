@@ -58,9 +58,9 @@ const func = async () => {
     Contoller.abi,
     signer
   );
-  // const poolJoinExitDisable =
-  //   await managedPoolContractSigner.setJoinExitEnabled(false);
-  // console.log("Join Disbaled", poolJoinExitDisable);
+  const poolJoinExitDisable =
+    await managedPoolContractSigner.setJoinExitEnabled(false);
+  console.log("Join Disbaled", poolJoinExitDisable);
 
   const poolJoinExitEnabled2 = await controller.getJoinExitEnabled();
   console.log("Managed Pool Join Exit Enabled status", poolJoinExitEnabled2);
@@ -68,8 +68,8 @@ const func = async () => {
   let poolSwapStatus = await controller.getSwapEnabled();
   console.log("Swap Enabled status", poolSwapStatus);
 
-  // const poolSwapEnabled = await managedPoolContractSigner.setSwapEnabled(true);
-  //  console.log("Swap Enabled status", poolSwapEnabled);
+  const poolSwapEnabled = await managedPoolContractSigner.setSwapEnabled(false);
+   console.log("Swap Enabled status", poolSwapEnabled);
 
   poolSwapStatus = await controller.getSwapEnabled();
   console.log("Swap Enabled status", poolSwapStatus);

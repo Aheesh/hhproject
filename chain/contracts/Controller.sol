@@ -231,17 +231,13 @@ contract Controller is Ownable {
     ) public onlyOwner {
         require(_distributeWinningTokens, "stable withdraw not done");
         (address poolAddress, ) = _vault.getPool(_poolId);
-        require(
-            !IManagedPool(poolAddress).getJoinExitEnabled(),
-            "Join/Exit is enabled"
-        );
+        require(!IManagedPool(poolAddress).getJoinExitEnabled(), "Join/Exit is enabled");
         require(!IManagedPool(poolAddress).getSwapEnabled(), "Swap enabled");
         require(recipients.length == amounts.length, "Array length mismatch");
+        
+        // Use transferFrom with the Controller as the 'from' address
         for (uint i = 0; i < recipients.length; i++) {
-            require(
-                token.transfer(recipients[i], amounts[i]),
-                "Transfer failed"
-            );
+            require(token.transfer(recipients[i], amounts[i]), "Transfer failed");
             console.log("Transferred ", amounts[i], " to ", recipients[i]);
         }
     }
