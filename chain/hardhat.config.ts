@@ -36,6 +36,7 @@ const config: HardhatUserConfig = {
       localhost: 0,
       sepolia: 0,
       base: 0,
+      anvil: 0
     },
     user1: {
       default: 1,
@@ -69,6 +70,11 @@ const config: HardhatUserConfig = {
       url: `https://base-mainnet.g.alchemy.com/v2/${providerBaseKey}`,
       accounts: [deployerBasePrivateKey],
     },
+    anvil: {
+      url: "http://127.0.0.1:8545",
+      accounts: [deployerPrivateKey, user1PrivateKey],
+      chainId: 8453
+    },
   },
 
   etherscan: {
@@ -77,9 +83,7 @@ const config: HardhatUserConfig = {
       base: etherscanBaseApiKey ?? "API_KEY_NOT_SET",
     },
   },
-  sourcify: {
-    enabled: true,
-  },
+ 
 };
 
 export default config;
