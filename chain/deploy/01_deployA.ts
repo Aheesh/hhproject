@@ -15,7 +15,7 @@ const deployYourContractA: DeployFunction = async function (
   // Deploy Player A Token
   await deploy("PlayerAToken", {
     from: deployer,
-    args: ["0xBA12222222228d8Ba445958a75a0704d566BF2C8", 600],
+    args: ["0xBA12222222228d8Ba445958a75a0704d566BF2C8", 140],
     log: true,
     autoMine: true,
   });
