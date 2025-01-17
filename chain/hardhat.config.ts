@@ -50,15 +50,16 @@ const config: HardhatUserConfig = {
     hardhat: {
       loggingEnabled: true,
       forking: {
-        url: `https://eth-mainnet.g.alchemy.com/v2/${providerApiKey}`,
-        blockNumber: 19685500,
+        url: `https://base-mainnet.g.alchemy.com/v2/${providerApiKey}`,
+        //blockNumber: 
         enabled: process.env.MAINNET_FORKING_ENABLED === "true",
       },
     },
     localhost: {
-      url: "http://127.0.0.1:8545/",
+      url: "http://0.0.0.0:8545/",
       accounts: [deployerPrivateKey, user1PrivateKey],
       gasPrice: 9000000000, // 9 gwei
+      chainId: 8453,
     },
     sepolia: {
       url: `https://eth-sepolia.g.alchemy.com/v2/${providerApiKey}`,

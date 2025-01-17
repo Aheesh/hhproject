@@ -14,7 +14,7 @@ const deployYourContractDraw: DeployFunction = async function (
   // Deploy Draw Token
   await deploy("DrawToken", {
     from: deployer,
-    args: ["0xBA12222222228d8Ba445958a75a0704d566BF2C8", 100],
+    args: ["0xBA12222222228d8Ba445958a75a0704d566BF2C8", 180],
     log: true,
     autoMine: true,
   });
