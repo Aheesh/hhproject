@@ -6,12 +6,16 @@ import { ethers } from "hardhat";
 import { PlayerAToken, ERC20, Controller } from "../typechain-types";
 import { formatEther, parseEther } from "ethers";
 import { getNamedAccounts } from "hardhat";
+import dotenv from "dotenv";
 
-const POOL_ID = "0x35da9476c4e06b521d45d6937172529f2a08fee40001000000000000000001b6";
-const VAULT_ADDRESS = "0xBA12222222228d8Ba445958a75a0704d566BF2C8";
+//load the env variables
+dotenv.config();
+
+const pool_id = process.env.POOL_ID;
+const vault_address = process.env.VAULT_ADDRESS;
 const INITIAL_LP_AMOUNT = parseEther("500"); // TODO initial LP amount to be fetched automatically
-const TOKEN_ADDRESS = "0x64f5219563e28EeBAAd91Ca8D31fa3b36621FD4f";
-const CONTROLLER_ADDRESS = "0x3e2A86884CF49a584f7873090825Ac311c76D609";
+const winning_token_address = process.env.WINNING_TOKEN_ADDRESS;
+const controller_address = process.env.MANAGED_POOL_CONTROLLER_ADDRESS;
 
 const mode = process.env.MODE || 'payoutCheck';
 
@@ -19,29 +23,60 @@ if (!['payoutCheck', 'payoutTransfer'].includes(mode)) {
   throw new Error('Invalid mode. Use MODE=payoutCheck or MODE=payoutTransfer');
 }
 
+if (!pool_id || !vault_address || !controller_address) {
+  throw new Error("Pool ID, Vault Address, or Controller Address is not defined");
+}
+
 async function main() {
   // Get deployer address
   const { deployer } = await getNamedAccounts();
   console.log("Deployer address:", deployer);
 
-  const vault = await ethers.getContractAt("IVault", VAULT_ADDRESS);
-  const controller = await ethers.getContractAt("Controller", CONTROLLER_ADDRESS);
+  const vault = await ethers.getContractAt("IVault", vault_address as string);
+  const controller = await ethers.getContractAt("Controller", controller_address as string);
   
   // Get pool tokens and balances
-  const [tokens, balances] = await vault.getPoolTokens(POOL_ID);
-  const stableTokenAddress = tokens[2]; //TODO stable token location in the pool to be fetched automatically
+  const [tokens, balances] = await vault.getPoolTokens(pool_id as string);
+
+  // Validate winning token is in the pool and in correct position
+  const winningTokenPosition = tokens.findIndex(token => 
+    token.toLowerCase() === winning_token_address?.toLowerCase()
+  );
+
+  if (winningTokenPosition === -1 || winningTokenPosition === 0 || winningTokenPosition > 4) {
+    throw new Error(`Invalid winning token address. Token must be in pool positions 1-4. Found at position: ${winningTokenPosition}`);
+  }
+
+  console.log(`Winning token validated at position: ${winningTokenPosition}`);
+
+  // Find stable token position by checking symbols
+  let stableTokenIndex = -1;
+  for (let i = 0; i < tokens.length; i++) {
+    const token = await ethers.getContractAt("ERC20", tokens[i]);
+    const symbol = await token.symbol();
+    if (symbol === "USDC" || symbol === "USDT" || symbol === "ST" || symbol === "DEGEN") {
+      stableTokenIndex = i;
+      break;
+    }
+  }
+
+  if (stableTokenIndex === -1) {
+    throw new Error("No stable token found in pool");
+  }
+
+  const stableTokenAddress = tokens[stableTokenIndex];
   const stableToken = await ethers.getContractAt("ERC20", stableTokenAddress);
   const stableTokenSymbol = await stableToken.symbol();
   
   // Calculate excess stable tokens (total - initial LP amount)
-  const stableBalance = balances[2]; //TODO stable token location in the pool to be fetched automatically
+  const stableBalance = balances[stableTokenIndex]; //TODO stable token location in the pool to be fetched automatically
   const excessStableTokens =  stableBalance - INITIAL_LP_AMOUNT;
   console.log(`\nExcess ${stableTokenSymbol} to distribute:`, formatEther(excessStableTokens));
 
   // Get winner transfers and combine amounts for same address
   const PlayerATokenFactory = await ethers.getContractFactory("PlayerAToken");
-  const playerAToken = PlayerATokenFactory.attach(TOKEN_ADDRESS) as PlayerAToken;
-  const transferFilter = playerAToken.filters.Transfer(VAULT_ADDRESS);
+  const playerAToken = PlayerATokenFactory.attach(winning_token_address as string) as PlayerAToken;
+  const transferFilter = playerAToken.filters.Transfer(vault_address as string);
   const transferEvents = await playerAToken.queryFilter(transferFilter);
 
   // Group transfers by recipient address

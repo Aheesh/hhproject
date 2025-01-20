@@ -4,6 +4,10 @@
 import hre from "hardhat";
 import Contoller from "../artifacts/contracts/Controller.sol/Controller.json";
 import { ethers } from "hardhat";
+import dotenv from "dotenv";
+
+//load the env variables
+dotenv.config();
 
 const func = async () => {
   console.log("Starting");
@@ -58,8 +62,11 @@ const func = async () => {
   const poolJoinExitEnabled = await controller.getJoinExitEnabled();
   console.log("Managed Pool Join Exit Enabled status", poolJoinExitEnabled);
 
-  const managedPoolControllerAddress =
-    "0x3e2A86884CF49a584f7873090825Ac311c76D609";
+// Get managed pool controller address from .env
+const managedPoolControllerAddress = process.env.MANAGED_POOL_CONTROLLER_ADDRESS;
+if (!managedPoolControllerAddress) {
+  throw new Error("MANAGED_POOL_CONTROLLER_ADDRESS not set in .env file");
+}
   console.log("Managed Pool Controller Address", managedPoolControllerAddress);
   const provider = hre.ethers.provider;
   const managedPoolContract = new ethers.Contract(
