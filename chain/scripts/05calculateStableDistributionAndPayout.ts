@@ -1,4 +1,5 @@
 //Script to calculate the distribution of stable tokens to winners set the .env variable MODE to payoutCheck or payoutTransfer
+//TODO : transfer the LP amount to the owner 
 
 import { ethers } from "hardhat";
 import { PlayerAToken, ERC20, Controller } from "../typechain-types";
