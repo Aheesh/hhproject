@@ -34,8 +34,11 @@ const func = async () => {
   console.log("Pool ID:", poolId);
 
   // Use Balancer Vault to get pool tokens instead
-  const VAULT_ADDRESS = "0xBA12222222228d8Ba445958a75a0704d566BF2C8"; // Balancer Vault
-  const vault = await hre.ethers.getContractAt("IVault", VAULT_ADDRESS);
+  if (!process.env.VAULT_ADDRESS) {
+    throw new Error("VAULT_ADDRESS not set in env");
+  }
+
+  const vault = await hre.ethers.getContractAt("IVault", process.env.VAULT_ADDRESS as string);
   
   try {
     const { tokens, balances, lastChangeBlock } = await vault.getPoolTokens(poolId);
