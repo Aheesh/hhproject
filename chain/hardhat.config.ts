@@ -34,6 +34,10 @@ const deployerBasePrivateKey =
   process.env.PROD_DEPLOYER_PRIVATE_KEY ??
   "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
 const etherscanApiKey = process.env.ETHERSCAN_API_KEY;
+const baseEtherscanApiKey = process.env.BASE_ETHERSCAN_API_KEY;
+if (!baseEtherscanApiKey) {
+  throw new Error("Missing BASE_ETHERSCAN_API_KEY in environment variables");
+}
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -92,7 +96,19 @@ const config: HardhatUserConfig = {
   },
 
   etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY,
+    apiKey: {
+      base: baseEtherscanApiKey,
+    },
+    customChains: [
+      {
+        network: "base",
+        chainId: 8453,
+        urls: {
+          apiURL: "https://api.basescan.org/api",
+          browserURL: "https://basescan.org"
+        }
+      }
+    ]
   },
   sourcify: {
     enabled: true,

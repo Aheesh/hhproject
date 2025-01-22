@@ -12,7 +12,6 @@ dotenv.config();
 const func = async () => {
   console.log("Starting");
   const { deployments } = hre;
-  //await deployments.fixture();
   const deployment = await deployments.get("Controller");
   console.log("Controller Address : ", deployment.address);
   const controller = await hre.ethers.getContractAt(
