@@ -43,21 +43,22 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     deploymentDrawToken.address
   );
 
-  const deploymentStableToken = await hre.deployments.get("StableToken");
-  console.log(
-    "deployed contract address StableToken 🐎 ⚖️ 🐎 === 🐎 ⚖️ 🐎",
-    deploymentStableToken.address
-  );
+  // const deploymentStableToken = await hre.deployments.get("StableToken");
+  // console.log(
+  //   "deployed contract address StableToken 🐎 ⚖️ 🐎 === 🐎 ⚖️ 🐎",
+  //   deploymentStableToken.address
+  // );
 
   //USDC address on Sepolia
   console.log("Network name", hre.network.name);
-  // let deploymentStableToken = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"; //USDC address on Mainnet
+  let deploymentStableToken = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"; //USDC address on Mainnet
   // if (hre.network.name === "sepolia") {
   //   deploymentStableToken = "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238";
-  // } else if (hre.network.name === "base") {
-  //   deploymentStableToken = "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed"; //DEGEN address on Base
-  // }
-  //console.log("Stable token address", deploymentStableToken);
+  // } else 
+  if (hre.network.name === "base") {
+     deploymentStableToken = "0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed"; //DEGEN address on Base
+   }
+  console.log("Stable token address", deploymentStableToken);
 
   const deployment = await hre.deployments.get("ControllerFactory");
   console.log(
@@ -73,7 +74,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     { address: deploymentA.address, weight: "140000000000000000" }, // A: 0.14
     { address: deploymentB.address, weight: "180000000000000000" }, // B: 0.18
     { address: deploymentDrawToken.address, weight: "180000000000000000" }, // Draw: 0.18
-    { address: deploymentStableToken.address, weight: "500000000000000000" }, // Stable: 0.50
+    { address: deploymentStableToken, weight: "500000000000000000" }, // Stable: 0.50
   ];
 
   // Sort tokens by address (numerically)
@@ -99,7 +100,7 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
     deployment.address
   );
   console.log(
-    "04 deploy script *******ControllerFactory *******",
+    "05 deploy script *******ControllerFactory *******",
     await ContollerFactoryContract.isDisabled()
   );
 
